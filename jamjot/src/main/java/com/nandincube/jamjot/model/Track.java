@@ -1,10 +1,13 @@
 package com.nandincube.jamjot.model;
 
+import java.util.ArrayList;
+
 import org.springframework.lang.NonNull;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
 
@@ -27,6 +30,8 @@ public class Track {
     @Column(length=400)
     private String note;
 
+    @ManyToMany(mappedBy = "tracks")
+    private ArrayList<Playlist> playlists;
 
     public Track(String trackID, String name, String imageURL, String artists){
         this.trackID = trackID;
@@ -34,6 +39,7 @@ public class Track {
         this.imageURL = imageURL;
         this.note = null;
         this.artists = artists;
+        this.playlists = new ArrayList<>();
     }
     
     public String getTrackID(){
@@ -61,5 +67,13 @@ public class Track {
 
     public String getArtists(){
         return artists;
+    }
+
+    public ArrayList<Playlist> getPlaylists(){
+        return playlists;
+    }
+
+    public boolean addToPlaylist(Playlist playlist){
+        return playlists.add(playlist);
     }
 }
