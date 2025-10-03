@@ -8,6 +8,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
@@ -30,7 +31,7 @@ public class Track {
     @Column(length=400)
     private String note;
 
-    @ManyToMany(mappedBy = "tracks")
+    @OneToMany(mappedBy = "playlist")
     private ArrayList<Playlist> playlists;
 
     public Track(String trackID, String name, String imageURL, String artists){
@@ -76,4 +77,26 @@ public class Track {
     public boolean addToPlaylist(Playlist playlist){
         return playlists.add(playlist);
     }
+
+    public void setTrackID(String trackID) {
+        this.trackID = trackID;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setArtists(String artists) {
+        this.artists = artists;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public void setPlaylists(ArrayList<Playlist> playlists) {
+        this.playlists = playlists;
+    }
+
+    
 }

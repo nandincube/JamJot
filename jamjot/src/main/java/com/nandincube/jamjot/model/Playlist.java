@@ -9,9 +9,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
@@ -36,11 +35,7 @@ public class Playlist {
     @JoinColumn(name="user_id")
     private User user;
 
-    @ManyToMany
-    @JoinTable(
-        name = "playlist_member", 
-        joinColumns = @JoinColumn(name = "playlist_id"), 
-        inverseJoinColumns = @JoinColumn(name = "track_id"))
+    @OneToMany(mappedBy = "track")
     private ArrayList<Track> tracks;
 
     public Playlist(String playlistID, String name, String imageURL, User user){
@@ -49,17 +44,16 @@ public class Playlist {
         this.imageURL = imageURL;
         this.note = null;
         this.user = user;
+        this.tracks = new ArrayList<Track>();
     }
     
     public String getPlaylistID(){
         return playlistID;
     }
 
-        
     public String getName(){
         return name;
     }
-
         
     public String getNote(){
         return note;
@@ -68,8 +62,7 @@ public class Playlist {
     public void setNote(String note){
         this.note = note;
     }
-
-        
+   
     public String getImageURL(){
         return imageURL;
     }
@@ -82,7 +75,7 @@ public class Playlist {
         return tracks;
     }
 
-    public  boolean addTrackToPlaylist(Track track){
+    public boolean addTrackToPlaylist(Track track){
         return tracks.add(track);
     }
 }
