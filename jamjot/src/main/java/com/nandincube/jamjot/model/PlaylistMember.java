@@ -7,7 +7,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.validation.constraints.Positive;
-
+//https://www.baeldung.com/jpa-many-to-many
 @Entity(name="Playlist_Member")
 public class PlaylistMember {
 
@@ -24,18 +24,21 @@ public class PlaylistMember {
     @JoinColumn(name ="playlist_id")
     private Playlist playlist;
 
-    private String note;
-
-    @Column(name ="track_number", nullable = false)
-    @Positive
+    @MapsId("trackNumber")
+    @Column(name ="track_number")
     private Integer trackNumber;
 
-    public PlaylistMember(Track track, Playlist playlist, int trackNumber, String trackID, String playlistID){
+    private String note;
+
+    public PlaylistMember(Track track, Playlist playlist, int trackNumber){
         this.playlist = playlist;
         this.track = track;
-        this.note = null;
         this.trackNumber = trackNumber;
-        this.playlistMemberID = new PlaylistMemberID(playlistID, trackID);
+        this.note = null;
+        this.playlistMemberID = new PlaylistMemberID(playlist.getPlaylistID(), track.getTrackID(), trackNumber);
+    }
+
+    public PlaylistMember() {
     }
 
     public PlaylistMemberID getPlaylistMemberID() {
@@ -76,6 +79,5 @@ public class PlaylistMember {
 
     public void setTrackNumber(Integer trackNumber) {
         this.trackNumber = trackNumber;
-    }
-    
+    }  
 }

@@ -30,8 +30,8 @@ public class Track {
     @Column(length=400)
     private String note;
 
-    @OneToMany(mappedBy = "playlist")
-    private ArrayList<Playlist> playlists;
+    @OneToMany(mappedBy = "track")
+    private ArrayList<PlaylistMember> playlists;
 
     public Track(String trackID, String name, String imageURL, String artists){
         this.trackID = trackID;
@@ -40,6 +40,9 @@ public class Track {
         this.note = null;
         this.artists = artists;
         this.playlists = new ArrayList<>();
+    }
+
+    public Track() {
     }
     
     public String getTrackID(){
@@ -69,12 +72,17 @@ public class Track {
         return artists;
     }
 
-    public ArrayList<Playlist> getPlaylists(){
+    public ArrayList<PlaylistMember> getPlaylists(){
         return playlists;
     }
 
-    public boolean addToPlaylist(Playlist playlist){
-        return playlists.add(playlist);
+    // public boolean addToPlaylist(PlaylistMember playlist){
+    //     return playlists.add(playlist);
+    // }
+
+    public boolean addToPlaylist(Playlist playlist, Integer trackNumber){
+        PlaylistMember playlistMember = new PlaylistMember(this, playlist, trackNumber);
+        return playlists.add(playlistMember);
     }
 
     public void setTrackID(String trackID) {
@@ -93,7 +101,7 @@ public class Track {
         this.imageURL = imageURL;
     }
 
-    public void setPlaylists(ArrayList<Playlist> playlists) {
+    public void setPlaylists(ArrayList<PlaylistMember> playlists) {
         this.playlists = playlists;
     }
 

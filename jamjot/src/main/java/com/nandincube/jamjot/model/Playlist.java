@@ -35,8 +35,8 @@ public class Playlist {
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "track")
-    private ArrayList<Track> tracks;
+    @OneToMany(mappedBy = "playlist")
+    private ArrayList<PlaylistMember> tracks;
 
     public Playlist(String playlistID, String name, String imageURL, User user){
         this.playlistID = playlistID;
@@ -44,7 +44,10 @@ public class Playlist {
         this.imageURL = imageURL;
         this.note = null;
         this.user = user;
-        this.tracks = new ArrayList<Track>();
+        this.tracks = new ArrayList<PlaylistMember>();
+    }
+
+    public Playlist() {
     }
     
     public String getPlaylistID(){
@@ -71,11 +74,16 @@ public class Playlist {
         return user;
     }
 
-    public ArrayList<Track> getTracks(){
+    public ArrayList<PlaylistMember> getTracks(){
         return tracks;
     }
 
-    public boolean addTrackToPlaylist(Track track){
-        return tracks.add(track);
+    // public boolean addTrackToPlaylist(PlaylistMember track){
+    //     return tracks.add(track);
+    // }
+
+    public boolean addTrackToPlaylist(Track track, Integer trackNumber){
+        PlaylistMember playlistMember = new PlaylistMember(track, this, trackNumber);
+        return tracks.add(playlistMember);
     }
 }

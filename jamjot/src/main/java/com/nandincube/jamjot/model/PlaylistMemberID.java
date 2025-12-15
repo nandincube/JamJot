@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.Positive;
 
 @Embeddable
 public class PlaylistMemberID implements Serializable{
@@ -13,9 +14,17 @@ public class PlaylistMemberID implements Serializable{
     @Column(name="track_id")
     private String trackID;
 
-    public PlaylistMemberID(String playlistID, String trackID){
+    @Column(name="track_number")
+    @Positive
+    private Integer trackNumber;
+
+    public PlaylistMemberID(String playlistID, String trackID, Integer trackNumber) {
         this.playlistID = playlistID;
         this.trackID = trackID;
+        this.trackNumber = trackNumber;
+    }
+
+    public PlaylistMemberID() {
     }
 
     public String getPlaylistID() {
@@ -34,5 +43,24 @@ public class PlaylistMemberID implements Serializable{
         this.trackID = trackID;
     }
 
-    
+    public Integer getTrackNumber() {
+        return trackNumber;
+    }
+
+    public void setTrackNumber(Integer trackNumber) {
+        this.trackNumber = trackNumber;
+    }
+
+    @Override 
+    public boolean equals(Object o){
+        if(this == o) return true;
+        if(o == null || getClass() != o.getClass()) return false;
+
+        PlaylistMemberID member = (PlaylistMemberID) o;
+
+        if(!playlistID.equals(member.playlistID)) return false;
+        if(!trackID.equals(member.trackID)) return false;
+        return trackNumber.equals(member.trackNumber);
+    }
+
 }

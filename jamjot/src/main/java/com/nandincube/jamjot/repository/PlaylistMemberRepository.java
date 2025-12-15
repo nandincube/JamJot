@@ -10,6 +10,7 @@ import com.nandincube.jamjot.Model.PlaylistMember;
 import com.nandincube.jamjot.Model.PlaylistMemberID;
 
 public interface PlaylistMemberRepository extends JpaRepository<PlaylistMember, PlaylistMemberID> {
-    List<PlaylistMember> findByPlaylistID(String playlistID);
-    Optional<PlaylistMember> findByPlaylistIDAndTrackNumber(String playlistID, Integer trackNumber);
+    //List<PlaylistMember> findByPlaylistID(String playlistID);
+   // Optional<PlaylistMember> findByPlaylist_PlaylistIDAndTrackNumber(String playlistID, Integer trackNumber);
+    Optional<PlaylistMember> findById(PlaylistMemberID playlistMemberID);
 }

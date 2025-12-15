@@ -19,6 +19,9 @@ public class User {
         this.userID = userID;
         this.displayName = displayName;
     }
+
+    public User() {
+    }
     
     public String getUserID(){
         return userID;

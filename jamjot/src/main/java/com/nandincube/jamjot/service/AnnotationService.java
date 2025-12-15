@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.nandincube.jamjot.Model.Playlist;
 import com.nandincube.jamjot.Model.PlaylistMember;
+import com.nandincube.jamjot.Model.PlaylistMemberID;
 import com.nandincube.jamjot.Repository.PlaylistMemberRepository;
 import com.nandincube.jamjot.Repository.PlaylistRepository;
 import com.nandincube.jamjot.Exceptions.PlaylistNotFoundException;
@@ -37,7 +38,6 @@ public class AnnotationService {
         return playlistOptional.get();
     }
 
-
     public String getPlaylistNote(String userID, String playlistID) throws PlaylistNotFoundException {
         Playlist playlist = getPlaylist(userID, playlistID);
 
@@ -56,10 +56,10 @@ public class AnnotationService {
         return updatePlaylistNote(userID, playlistID, null);
     }
 
-    private PlaylistMember getTrack(String userID, String playlistID, Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException {
-       Playlist playlist = getPlaylist(userID, playlistID);
-
-       Optional<PlaylistMember> trackInPlaylist = playlistMemberRepository.findByPlaylistIDAndTrackNumber(playlist.getPlaylistID(), trackNumber);
+    private PlaylistMember getTrack(String userID, String playlistID, String trackID, Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException {
+        if (getPlaylist(userID, playlistID) == null) return null;
+        PlaylistMemberID playlistMemberID = new PlaylistMemberID(playlistID, trackID, trackNumber);
+        Optional<PlaylistMember> trackInPlaylist = playlistMemberRepository.findById(playlistMemberID);
 
        if(trackInPlaylist.isEmpty()){
             throw new TrackNotFoundException();
@@ -68,19 +68,22 @@ public class AnnotationService {
        return trackInPlaylist.get();  
     }
 
-     public String getTrackNote(String userID, String playlistID, Integer trackNumber) throws TrackNotFoundException, PlaylistNotFoundException {
-        PlaylistMember trackInPlaylist = getTrack(userID, playlistID, trackNumber);
+     public String getTrackNote(String userID, String playlistID, String trackID, Integer trackNumber) throws TrackNotFoundException, PlaylistNotFoundException {
+        if (getPlaylist(userID, playlistID) == null) return null;
+        PlaylistMember trackInPlaylist = getTrack(userID, playlistID, trackID, trackNumber);
         return trackInPlaylist.getNote();
     }
 
-    public PlaylistMember updateTrackNote(String userID, String playlistID, Integer trackNumber, String note) throws PlaylistNotFoundException, TrackNotFoundException {
-        PlaylistMember trackInPlaylist = getTrack(userID, playlistID, trackNumber);
+    public PlaylistMember updateTrackNote(String userID, String playlistID, String trackID, Integer trackNumber, String note) throws PlaylistNotFoundException, TrackNotFoundException {
+        if (getPlaylist(userID, playlistID) == null) return null;
+
+        PlaylistMember trackInPlaylist = getTrack(userID, playlistID, trackID, trackNumber);
         trackInPlaylist.setNote(note);
         return playlistMemberRepository.save(trackInPlaylist);
     }
 
-    public PlaylistMember deletePlaylistNote(String userID, String playlistID, Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException {
-        return updateTrackNote(userID, playlistID, trackNumber, null);
+    public PlaylistMember deletePlaylistNote(String userID, String playlistID, String trackID, Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException {
+        return updateTrackNote(userID, playlistID, trackID, trackNumber, null);
     }
 
 }
