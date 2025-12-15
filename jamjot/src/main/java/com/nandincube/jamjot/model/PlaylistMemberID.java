@@ -1,4 +1,4 @@
-package com.nandincube.jamjot.model;
+package com.nandincube.jamjot.Model;
 
 import java.io.Serializable;
 
@@ -6,14 +6,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public class PlaylistMemberKey implements Serializable{
+public class PlaylistMemberID implements Serializable{
     @Column(name="playlist_id")
     private String playlistID;
 
     @Column(name="track_id")
     private String trackID;
 
-    public PlaylistMemberKey(String playlistID, String trackID){
+    public PlaylistMemberID(String playlistID, String trackID){
         this.playlistID = playlistID;
         this.trackID = trackID;
     }

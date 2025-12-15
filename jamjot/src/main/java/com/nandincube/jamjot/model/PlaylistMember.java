@@ -1,6 +1,5 @@
-package com.nandincube.jamjot.model;
+package com.nandincube.jamjot.Model;
 
-import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -13,7 +12,7 @@ import jakarta.validation.constraints.Positive;
 public class PlaylistMember {
 
     @EmbeddedId
-    private PlaylistMemberKey playlistMemberId;
+    private PlaylistMemberID playlistMemberID;
 
     @ManyToOne
     @MapsId("trackID")
@@ -31,19 +30,20 @@ public class PlaylistMember {
     @Positive
     private Integer trackNumber;
 
-    public PlaylistMember(Track track, Playlist playlist, int trackNumber){
+    public PlaylistMember(Track track, Playlist playlist, int trackNumber, String trackID, String playlistID){
         this.playlist = playlist;
         this.track = track;
         this.note = null;
         this.trackNumber = trackNumber;
+        this.playlistMemberID = new PlaylistMemberID(playlistID, trackID);
     }
 
-    public PlaylistMemberKey getPlaylistMemberId() {
-        return playlistMemberId;
+    public PlaylistMemberID getPlaylistMemberID() {
+        return playlistMemberID;
     }
 
-    public void setPlaylistMemberId(PlaylistMemberKey playlistMemberId) {
-        this.playlistMemberId = playlistMemberId;
+    public void setPlaylistMemberId(PlaylistMemberID playlistMemberID) {
+        this.playlistMemberID = playlistMemberID;
     }
 
     public Track getTrack() {

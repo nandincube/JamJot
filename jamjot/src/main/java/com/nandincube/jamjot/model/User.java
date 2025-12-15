@@ -1,4 +1,4 @@
-package com.nandincube.jamjot.model;
+package com.nandincube.jamjot.Model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
