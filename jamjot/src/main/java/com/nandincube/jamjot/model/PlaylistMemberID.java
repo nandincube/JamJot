@@ -6,21 +6,23 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Positive;
 
+//https://www.baeldung.com/spring-jpa-embedded-method-parameters
 @Embeddable
-public class PlaylistMemberID implements Serializable{
-    @Column(name="playlist_id")
-    private String playlistID;
+public class PlaylistMemberID implements Serializable {
 
-    @Column(name="track_id")
+    @Column(name = "track_id")
     private String trackID;
 
-    @Column(name="track_number")
+    @Column(name = "playlist_id")
+    private String playlistID;
+
+    @Column(name = "track_number")
     @Positive
     private Integer trackNumber;
 
-    public PlaylistMemberID(String playlistID, String trackID, Integer trackNumber) {
-        this.playlistID = playlistID;
+    public PlaylistMemberID(String trackID,String playlistID, Integer trackNumber) {
         this.trackID = trackID;
+        this.playlistID = playlistID;
         this.trackNumber = trackNumber;
     }
 
@@ -51,16 +53,28 @@ public class PlaylistMemberID implements Serializable{
         this.trackNumber = trackNumber;
     }
 
-    @Override 
-    public boolean equals(Object o){
-        if(this == o) return true;
-        if(o == null || getClass() != o.getClass()) return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         PlaylistMemberID member = (PlaylistMemberID) o;
 
-        if(!playlistID.equals(member.playlistID)) return false;
-        if(!trackID.equals(member.trackID)) return false;
+        if (!playlistID.equals(member.playlistID))
+            return false;
+        if (!trackID.equals(member.trackID))
+            return false;
         return trackNumber.equals(member.trackNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = playlistID != null ? playlistID.hashCode() : 0;
+        result = 31 * result + (trackID != null ? trackID.hashCode() : 0);
+        result = 31 * result + (trackNumber != null ? trackNumber.hashCode() : 0);
+        return result;
     }
 
 }
