@@ -82,7 +82,7 @@ public class AnnotationService {
         return playlistMemberRepository.save(trackInPlaylist);
     }
 
-    public PlaylistMember deletePlaylistNote(String userID, String playlistID, String trackID, Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException {
+    public PlaylistMember deleteTrackNote(String userID, String playlistID, String trackID, Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException {
         return updateTrackNote(userID, playlistID, trackID, trackNumber, null);
     }
 
