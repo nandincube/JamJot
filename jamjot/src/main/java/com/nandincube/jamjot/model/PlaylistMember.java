@@ -76,12 +76,4 @@ public class PlaylistMember {
     public void setNote(String note) {
         this.note = note;
     }
-
-    // public Integer getTrackNumber() {
-    //     return trackNumber;
-    // }
-
-    // public void setTrackNumber(Integer trackNumber) {
-    //     this.trackNumber = trackNumber;
-    // }  
 }

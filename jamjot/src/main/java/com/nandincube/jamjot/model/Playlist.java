@@ -78,10 +78,6 @@ public class Playlist {
         return tracks;
     }
 
-    // public boolean addTrackToPlaylist(PlaylistMember track){
-    //     return tracks.add(track);
-    // }
-
     public boolean addTrackToPlaylist(Track track, Integer trackNumber){
         PlaylistMember playlistMember = new PlaylistMember(track, this, trackNumber);
         return tracks.add(playlistMember);

@@ -17,6 +17,7 @@ public class SecurityConfiguration  {
                     auth.anyRequest().authenticated();
                 })
                 .oauth2Login(withDefaults())
+                .oauth2Client(withDefaults())
                 .build();
     }
     

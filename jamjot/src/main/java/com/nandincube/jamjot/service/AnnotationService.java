@@ -40,7 +40,6 @@ public class AnnotationService {
 
     public String getPlaylistNote(String userID, String playlistID) throws PlaylistNotFoundException {
         Playlist playlist = getPlaylist(userID, playlistID);
-
         return playlist.getNote();
     }
 
@@ -52,7 +51,6 @@ public class AnnotationService {
     }
 
     public Playlist deletePlaylistNote(String userID, String playlistID) throws PlaylistNotFoundException {
-        
         return updatePlaylistNote(userID, playlistID, null);
     }
 
@@ -85,5 +83,4 @@ public class AnnotationService {
     public PlaylistMember deleteTrackNote(String userID, String playlistID, String trackID, Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException {
         return updateTrackNote(userID, playlistID, trackID, trackNumber, null);
     }
-
 }
