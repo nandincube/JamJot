@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClient;
-
 import com.nandincube.jamjot.DTO.PlaylistDTO;
-import com.nandincube.jamjot.DTO.PlaylistsResponse;
 import com.nandincube.jamjot.DTO.TrackDTO;
 import com.nandincube.jamjot.Exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.Exceptions.TrackNotFoundException;
@@ -39,7 +36,11 @@ public class AnnotationsController {
      */
     @GetMapping("/")
     public ResponseEntity<ArrayList<PlaylistDTO>> getPlaylists() {
-        ArrayList<PlaylistDTO> playlists = annotationService.getPlaylists();   
+        ArrayList<PlaylistDTO> playlists = annotationService.getPlaylists();  
+        playlists.forEach(playlist -> {
+            System.out.println(playlist.name());
+            System.out.println(playlist.id());
+        }); 
         return ResponseEntity.ok(playlists);
     }
 
