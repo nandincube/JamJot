@@ -1,5 +1,7 @@
 package com.nandincube.jamjot.Controller;
 
+import java.util.ArrayList;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 
+import com.nandincube.jamjot.DTO.PlaylistDTO;
+import com.nandincube.jamjot.DTO.PlaylistsResponse;
+import com.nandincube.jamjot.DTO.TrackDTO;
 import com.nandincube.jamjot.Exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.Exceptions.TrackNotFoundException;
 import com.nandincube.jamjot.Service.AnnotationService;
@@ -23,35 +28,19 @@ import com.nandincube.jamjot.Service.AnnotationService;
 public class AnnotationsController {
 
     private static AnnotationService annotationService;
-    private final RestClient restClient;
-    private static final String SPOTIFY_BASE_URL = "https://api.spotify.com/v1";
 
-    public AnnotationsController(AnnotationService annotationService, RestClient restClient) {
+    public AnnotationsController(AnnotationService annotationService) {
         this.annotationService = annotationService;
-        this.restClient = restClient;
     }
 
     /**
-     * TODO:
-     * 
-     * https://docs.spring.io/spring-security/reference/servlet/oauth2/index.html#oauth2-client-access-protected-resources-current-user
-     * ///GET users/{user_id}/playlists
-     * ///
-     * //response.items.forEach(playlist -> {
-     * // System.out.println(playlist.name);
-     * // System.out.println(playlist.id)});
      * 
      * @return
      */
     @GetMapping("/")
-    public ResponseEntity<Void> getPlaylists(Authentication user) {
-        String userID = user.getName();
-        String response = this.restClient.get()
-                .uri(SPOTIFY_BASE_URL + "users/" + userID + "/playlists")
-                .retrieve()
-                .body(String.class); //TODO: serialise to DS and extract relevant fields and return  
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ArrayList<PlaylistDTO>> getPlaylists() {
+        ArrayList<PlaylistDTO> playlists = annotationService.getPlaylists();   
+        return ResponseEntity.ok(playlists);
     }
 
     /**
@@ -109,28 +98,12 @@ public class AnnotationsController {
     }
 
     /**
-     * TODO:
-     * 
-     * ///GET /playlists/{playlist_id}/tracks
-     * ///
-     * //res = response.items
-     * // for (int i =0 ; i< res.length; i++){
-     * // track = res[i].track
-     * // System.out.println(track.trackObject.name);
-     * // System.out.println(track.trackObject.id)})
-     * // };
-     * 
-     * 
-     * 
-     * @return
+   
      */
     @GetMapping("/{playlistID}/tracks")
-    public ResponseEntity<Void> getTracks(@PathVariable String playlistID) {
-        String response = this.restClient.get()
-                .uri(SPOTIFY_BASE_URL + "/playlists/" + playlistID + "/tracks")
-                .retrieve()
-                .body(String.class); //TODO: serialise to DS and extract relevant fields and return  
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ArrayList<TrackDTO>> getTracks(@PathVariable String playlistID) {
+        ArrayList<TrackDTO> tracks = annotationService.getTracks(playlistID);
+        return ResponseEntity.ok(tracks);
     }
 
     /**
