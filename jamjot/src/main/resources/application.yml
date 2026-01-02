@@ -21,7 +21,7 @@ spring:
             user-info-uri: https://api.spotify.com/v1/me
             user-name-attribute: id
   datasource:
-    url: 
+    url: ${DATABASE_URL}
     username: ${DATABASE_USER}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver

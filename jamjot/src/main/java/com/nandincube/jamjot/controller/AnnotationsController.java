@@ -1,4 +1,4 @@
-package com.nandincube.jamjot.Controller;
+package com.nandincube.jamjot.controller;
 
 import java.util.ArrayList;
 
@@ -14,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.nandincube.jamjot.DTO.PlaylistDTO;
-import com.nandincube.jamjot.DTO.TrackDTO;
-import com.nandincube.jamjot.Exceptions.PlaylistNotFoundException;
-import com.nandincube.jamjot.Exceptions.TrackNotFoundException;
-import com.nandincube.jamjot.Service.AnnotationService;
+
+
+import com.nandincube.jamjot.service.AnnotationService;
+import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
+import com.nandincube.jamjot.exceptions.TrackNotFoundException;
+import com.nandincube.jamjot.dto.TrackDTO;
+import com.nandincube.jamjot.dto.PlaylistDTO;
 
 @RestController
 @RequestMapping("annotations/playlists")

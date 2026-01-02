@@ -1,4 +1,4 @@
-package com.nandincube.jamjot.Model;
+package com.nandincube.jamjot.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;

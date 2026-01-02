@@ -1,4 +1,4 @@
-package com.nandincube.jamjot.Model;
+package com.nandincube.jamjot.model;
 
 import java.util.ArrayList;
 

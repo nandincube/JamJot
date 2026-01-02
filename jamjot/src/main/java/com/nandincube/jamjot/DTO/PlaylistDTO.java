@@ -1,4 +1,4 @@
-package com.nandincube.jamjot.DTO;
+package com.nandincube.jamjot.dto;
 
 public record PlaylistDTO(
     String id,

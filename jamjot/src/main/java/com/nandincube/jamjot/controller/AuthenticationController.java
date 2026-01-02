@@ -1,4 +1,4 @@
-package com.nandincube.jamjot.Controller;
+package com.nandincube.jamjot.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

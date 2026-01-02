@@ -1,4 +1,4 @@
-package com.nandincube.jamjot.Service;
+package com.nandincube.jamjot.service;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -8,17 +8,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.client.RestClient;
 
-import com.nandincube.jamjot.Model.Playlist;
-import com.nandincube.jamjot.Model.PlaylistMember;
-import com.nandincube.jamjot.Model.PlaylistMemberID;
-import com.nandincube.jamjot.Repository.PlaylistMemberRepository;
-import com.nandincube.jamjot.Repository.PlaylistRepository;
-import com.nandincube.jamjot.DTO.PlaylistDTO;
-import com.nandincube.jamjot.DTO.PlaylistsResponse;
-import com.nandincube.jamjot.DTO.TrackDTO;
-import com.nandincube.jamjot.DTO.TracksResponse;
-import com.nandincube.jamjot.Exceptions.PlaylistNotFoundException;
-import com.nandincube.jamjot.Exceptions.TrackNotFoundException;
+import com.nandincube.jamjot.model.Playlist;
+import com.nandincube.jamjot.model.PlaylistMember;
+import com.nandincube.jamjot.model.PlaylistMemberID;
+import com.nandincube.jamjot.repository.PlaylistMemberRepository;
+import com.nandincube.jamjot.repository.PlaylistRepository;
+import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
+import com.nandincube.jamjot.exceptions.TrackNotFoundException;
+import com.nandincube.jamjot.dto.PlaylistDTO;
+import com.nandincube.jamjot.dto.PlaylistsResponse;
+import com.nandincube.jamjot.dto.TrackDTO;
+import com.nandincube.jamjot.dto.TracksResponse;
 
 @Service
 public class AnnotationService {

@@ -1,5 +1,5 @@
 
-package com.nandincube.jamjot.Service;
+package com.nandincube.jamjot.service;
 
 import org.springframework.stereotype.Service;
 

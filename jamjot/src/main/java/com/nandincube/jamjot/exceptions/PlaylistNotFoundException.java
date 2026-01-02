@@ -1,4 +1,4 @@
-package com.nandincube.jamjot.Exceptions;
+package com.nandincube.jamjot.exceptions;
 
 public class PlaylistNotFoundException extends Exception {
     public PlaylistNotFoundException() {
