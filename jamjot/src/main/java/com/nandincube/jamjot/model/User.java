@@ -31,4 +31,12 @@ public class User {
         return displayName;
     }
 
+    public void setUserID(String userID){
+        this.userID = userID;
+    }
+
+    public void setDisplayName(String displayName){
+        this.displayName = displayName;
+    }
+
 }
