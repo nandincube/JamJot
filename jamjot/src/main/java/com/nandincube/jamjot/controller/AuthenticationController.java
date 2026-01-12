@@ -1,6 +1,7 @@
 package com.nandincube.jamjot.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,9 +40,9 @@ public class AuthenticationController {
         
     //     return null;
     // }
-
     @GetMapping("/secured")
     public ResponseEntity<Void> login(){
+
          return ResponseEntity.ok().build();
     }
 }

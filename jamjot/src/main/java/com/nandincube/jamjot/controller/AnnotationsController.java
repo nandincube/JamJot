@@ -23,7 +23,7 @@ import com.nandincube.jamjot.dto.TrackDTO;
 import com.nandincube.jamjot.dto.PlaylistDTO;
 
 @RestController
-@RequestMapping("annotations/playlists")
+@RequestMapping("/annotations")
 public class AnnotationsController {
 
     private static AnnotationService annotationService;
@@ -32,11 +32,16 @@ public class AnnotationsController {
         this.annotationService = annotationService;
     }
 
+    @GetMapping("/")
+    public String dashboard() {
+        return "Annotations Dashboard";
+    }
+
     /**
      * 
      * @return
      */
-    @GetMapping("/")
+    @GetMapping("/playlists")
     public ResponseEntity<ArrayList<PlaylistDTO>> getPlaylists() {
         ArrayList<PlaylistDTO> playlists = annotationService.getPlaylists();  
         playlists.forEach(playlist -> {
@@ -51,9 +56,9 @@ public class AnnotationsController {
      * 
      * @return
      */
-    @GetMapping("/{playlistID}/note")
-    public ResponseEntity<String> getPlaylistNote(Authentication user, @PathVariable String playlistID) {
-        String userID = user.getName();
+    @GetMapping("/playlists/{playlistID}/note")
+    public ResponseEntity<String> getPlaylistNote(Authentication userToken, @PathVariable String playlistID) {
+        String userID = userToken.getName();
         try {
             return ResponseEntity.ok(annotationService.getPlaylistNote(userID, playlistID));
         } catch (PlaylistNotFoundException e) {
@@ -68,10 +73,10 @@ public class AnnotationsController {
      * 
      * @return
      */
-    @PostMapping("/{playlistID}/note")
-    public ResponseEntity<String> updatePlaylistNote(Authentication user, @PathVariable String playlistID,
+    @PostMapping("/playlists/{playlistID}/note")
+    public ResponseEntity<String> updatePlaylistNote(Authentication userToken, @PathVariable String playlistID,
             @RequestBody String note) {
-        String userID = user.getName();
+        String userID = userToken.getName();
 
         try {
             annotationService.updatePlaylistNote(userID, playlistID, note);
@@ -87,10 +92,10 @@ public class AnnotationsController {
      * 
      * @return
      */
-    @DeleteMapping("/{playlistID}/note")
-    public ResponseEntity<String> deletePlaylistNote(Authentication user, @PathVariable String playlistID) {
+    @DeleteMapping("/playlists/{playlistID}/note")
+    public ResponseEntity<String> deletePlaylistNote(Authentication userToken, @PathVariable String playlistID) {
         // return ResponseEntity.ok().build();
-        String userID = user.getName();
+        String userID = userToken.getName();
         try {
             annotationService.deletePlaylistNote(userID, playlistID);
             return ResponseEntity.ok("Playlist Note Deleted!");
@@ -103,7 +108,7 @@ public class AnnotationsController {
     /**
    
      */
-    @GetMapping("/{playlistID}/tracks")
+    @GetMapping("/playlists/{playlistID}/tracks")
     public ResponseEntity<ArrayList<TrackDTO>> getTracks(@PathVariable String playlistID) {
         ArrayList<TrackDTO> tracks = annotationService.getTracks(playlistID);
         return ResponseEntity.ok(tracks);
@@ -114,11 +119,11 @@ public class AnnotationsController {
      * 
      * @return
      */
-    @GetMapping("/{playlistID}/track/{trackID}/note")
-    public ResponseEntity<String> getTrackNote(Authentication user, @PathVariable String playlistID,
+    @GetMapping("/playlists/{playlistID}/track/{trackID}/note")
+    public ResponseEntity<String> getTrackNote(Authentication userToken, @PathVariable String playlistID,
             @PathVariable String trackID,
             @RequestParam(required = true) Integer trackNumber) {
-        String userID = user.getName();
+        String userID = userToken.getName();
 
         try {
             return ResponseEntity.ok(annotationService.getTrackNote(userID, playlistID, trackID, trackNumber));
@@ -136,12 +141,12 @@ public class AnnotationsController {
      * 
      * @return
      */
-    @PostMapping("/{playlistID}/track/{trackID}/note")
-    public ResponseEntity<String> updateTrackNote(Authentication user, @PathVariable String playlistID,
+    @PostMapping("/playlists/{playlistID}/track/{trackID}/note")
+    public ResponseEntity<String> updateTrackNote(Authentication userToken, @PathVariable String playlistID,
             @PathVariable String trackID,
             @RequestParam(required = true) Integer trackNumber, @RequestBody String note) {
 
-        String userID = user.getName();
+        String userID = userToken.getName();
 
         try {
             annotationService.updateTrackNote(userID, playlistID, trackID, trackNumber, note);
@@ -160,11 +165,11 @@ public class AnnotationsController {
      * 
      * @return
      */
-    @DeleteMapping("/{playlistID}/track/{trackID}/note")
-    public ResponseEntity<String> deleteTrackNote(Authentication user, @PathVariable String playlistID,
+    @DeleteMapping("/playlists/{playlistID}/track/{trackID}/note")
+    public ResponseEntity<String> deleteTrackNote(Authentication userToken, @PathVariable String playlistID,
             @PathVariable String trackID,
             @RequestParam(required = true) Integer trackNumber) {
-        String userID = user.getName();
+        String userID = userToken.getName();
 
         try {
             annotationService.deleteTrackNote(userID, playlistID, trackID, trackNumber);
