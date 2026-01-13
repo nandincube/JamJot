@@ -23,8 +23,9 @@ public class AuthenticationService {
     public String createUserIfNotExists(Authentication userToken) {
         String id = userToken.getName();
         OAuth2User oauthUser = (OAuth2User) userToken.getPrincipal();
-        String displayName = oauthUser.getAttribute("displayName");
+        String displayName = oauthUser.getAttribute("display_name");
 
+    
         if(id == null || id.isEmpty()){
             return "ID is null or empty";
         }
@@ -38,6 +39,7 @@ public class AuthenticationService {
         }
         return "SUCCESS";
     }
+
 
     public String signup() {
 

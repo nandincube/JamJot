@@ -24,9 +24,6 @@ public class Playlist {
     @NonNull
     private String name;
 
-    @Column(name="image_url", nullable = true)
-    private String imageURL;
-
     @Column(length=300)
     private String note;
 
@@ -38,10 +35,9 @@ public class Playlist {
     @OneToMany(mappedBy = "playlist")
     private ArrayList<PlaylistMember> tracks;
 
-    public Playlist(String playlistID, String name, String imageURL, User user){
+    public Playlist(String playlistID, String name, User user){
         this.playlistID = playlistID;
         this.name = name;
-        this.imageURL = imageURL;
         this.note = null;
         this.user = user;
         this.tracks = new ArrayList<PlaylistMember>();
@@ -65,10 +61,7 @@ public class Playlist {
     public void setNote(String note){
         this.note = note;
     }
-   
-    public String getImageURL(){
-        return imageURL;
-    }
+
 
     public User getUser(){
         return user;

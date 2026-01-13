@@ -7,13 +7,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nandincube.jamjot.model.User;
+import com.nandincube.jamjot.service.AuthenticationService;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthenticationController {
 
-    public AuthenticationController(){
-        
+    private final AuthenticationService authenticationService;
+
+    public AuthenticationController(AuthenticationService authenticationService){
+        this.authenticationService = authenticationService;
     }
+    
 
     // @GetMapping("/home")
     // public ResponseEntity<String> home(){
@@ -45,4 +51,11 @@ public class AuthenticationController {
 
          return ResponseEntity.ok().build();
     }
+
+
+    // @GetMapping("/dummy-login")
+    // public ResponseEntity<User> loginDummy(){
+    //     User user = authenticationService.createUserIfNotExists("dummy-id", "Dummy User");
+    //     return ResponseEntity.ok().body(user);
+    // }
 }

@@ -23,21 +23,13 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         this.authenticationService = authenticationService;
     }
 
-
-
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication userToken) throws IOException, ServletException {
-               System.out.println("Request URL: " + request.getRequestURL());
-System.out.println("Host header: " + request.getHeader("Host"));
-System.out.println("X-Forwarded-Host: " + request.getHeader("X-Forwarded-Host"));
 
-                authenticationService.createUserIfNotExists(userToken);
+        authenticationService.createUserIfNotExists(userToken);
 
-                
-                //TODO: Redirect to appropriate page after login
-                response.sendRedirect("/annotations/");
+        response.sendRedirect("/swagger-ui/index.html");
 
-
-    } 
+    }
 }

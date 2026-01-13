@@ -32,29 +32,22 @@ public class AnnotationsController {
         this.annotationService = annotationService;
     }
 
-    @GetMapping("/")
-    public String dashboard() {
-        return "Annotations Dashboard";
-    }
-
     /**
-     * 
-     * @return
+     * This endpoint retrieves all playlists for the authenticated user.
+     * This is retrieved via the Spotify API using the user's access token.
+     * @return ResponseEntity<ArrayList<PlaylistDTO>> - List of playlists and their details, including name, description and spotify ID.
      */
     @GetMapping("/playlists")
     public ResponseEntity<ArrayList<PlaylistDTO>> getPlaylists() {
-        ArrayList<PlaylistDTO> playlists = annotationService.getPlaylists();  
-        playlists.forEach(playlist -> {
-            System.out.println(playlist.name());
-            System.out.println(playlist.id());
-        }); 
+        ArrayList<PlaylistDTO> playlists = annotationService.getPlaylistsFromSpotify();  
         return ResponseEntity.ok(playlists);
     }
 
     /**
-     * TODO:
-     * 
-     * @return
+     * This method retrieves the note for a specific playlist for the authenticated user.
+     * @param userToken - Authentication token of the user.
+     * @param playlistID - Spotify ID of the playlist.
+     * @return ResponseEntity<String> - Note associated with the playlist.
      */
     @GetMapping("/playlists/{playlistID}/note")
     public ResponseEntity<String> getPlaylistNote(Authentication userToken, @PathVariable String playlistID) {
@@ -62,16 +55,17 @@ public class AnnotationsController {
         try {
             return ResponseEntity.ok(annotationService.getPlaylistNote(userID, playlistID));
         } catch (PlaylistNotFoundException e) {
-
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(e.getMessage());
         }
     }
 
     /**
-     * TODO:
-     * 
-     * @return
+     * This method updates the note for a specific playlist for the authenticated user.
+     * @param userToken - Authentication token of the user.
+     * @param playlistID - Spotify ID of the playlist.
+     * @param note - New note to be associated with the playlist.
+     * @return ResponseEntity<String> - Confirmation message upon successful update.
      */
     @PostMapping("/playlists/{playlistID}/note")
     public ResponseEntity<String> updatePlaylistNote(Authentication userToken, @PathVariable String playlistID,
