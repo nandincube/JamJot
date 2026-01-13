@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nandincube.jamjot.service.AnnotationService;
 import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.exceptions.TrackNotFoundException;
-import com.nandincube.jamjot.dto.TrackDTO;
+import com.nandincube.jamjot.exceptions.UserNotFoundException;
+import com.nandincube.jamjot.dto.NoteRequest;
 import com.nandincube.jamjot.dto.PlaylistDTO;
+import com.nandincube.jamjot.dto.TrackDTO;
 
 @RestController
 @RequestMapping("/annotations")
@@ -69,22 +71,28 @@ public class AnnotationsController {
      */
     @PostMapping("/playlists/{playlistID}/note")
     public ResponseEntity<String> updatePlaylistNote(Authentication userToken, @PathVariable String playlistID,
-            @RequestBody String note) {
+            @RequestBody NoteRequest note) {
         String userID = userToken.getName();
 
         try {
-            annotationService.updatePlaylistNote(userID, playlistID, note);
+            annotationService.updatePlaylistNote(userID, playlistID, note.getNote());
             return ResponseEntity.ok("Playlist Note Updated!");
-        } catch (PlaylistNotFoundException e) {
+        } catch (PlaylistNotFoundException e ) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        }
+        catch (UserNotFoundException e ) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(e.getMessage());
         }
     }
 
+   
     /**
-     * TODO:
-     * 
-     * @return
+     * This method deletes the note for a specific playlist for the authenticated user.
+     * @param userToken - Authentication token of the user.
+     * @param playlistID - Spotify ID of the playlist.
+     * @return ResponseEntity<String> - Confirmation message upon successful deletion.
      */
     @DeleteMapping("/playlists/{playlistID}/note")
     public ResponseEntity<String> deletePlaylistNote(Authentication userToken, @PathVariable String playlistID) {
@@ -96,21 +104,32 @@ public class AnnotationsController {
         } catch (PlaylistNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(e.getMessage());
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
+        
     }
 
+ 
     /**
-   
+ * TODO: add error handling in endpoint
+     * @param playlistID
+     * @return
      */
     @GetMapping("/playlists/{playlistID}/tracks")
     public ResponseEntity<ArrayList<TrackDTO>> getTracks(@PathVariable String playlistID) {
-        ArrayList<TrackDTO> tracks = annotationService.getTracks(playlistID);
+        ArrayList<TrackDTO> tracks = annotationService.getTracksFromSpotify(playlistID);
         return ResponseEntity.ok(tracks);
     }
 
+   
     /**
-     * TODO:
-     * 
+     * This method retrieves the note for a specific track in a playlist for the authenticated user.
+     * @param userToken
+     * @param playlistID
+     * @param trackID
+     * @param trackNumber
      * @return
      */
     @GetMapping("/playlists/{playlistID}/track/{trackID}/note")

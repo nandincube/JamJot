@@ -1,6 +1,7 @@
 package com.nandincube.jamjot.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.lang.NonNull;
 
@@ -33,7 +34,7 @@ public class Playlist {
     private User user;
 
     @OneToMany(mappedBy = "playlist")
-    private ArrayList<PlaylistMember> tracks;
+    private List<PlaylistMember> tracks;
 
     public Playlist(String playlistID, String name, User user){
         this.playlistID = playlistID;
@@ -67,7 +68,7 @@ public class Playlist {
         return user;
     }
 
-    public ArrayList<PlaylistMember> getTracks(){
+    public List<PlaylistMember> getTracks(){
         return tracks;
     }
 

@@ -4,5 +4,5 @@ import java.util.ArrayList;
 
 public record TracksResponse (
     String next,
-    ArrayList<TrackDTO> items
+    ArrayList<SpotifyTrackDTO> items
 ) {}

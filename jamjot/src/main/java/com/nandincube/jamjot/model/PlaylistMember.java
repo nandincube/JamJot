@@ -49,7 +49,7 @@ public class PlaylistMember {
         return playlistMemberID;
     }
 
-    public void setPlaylistMemberId(PlaylistMemberID playlistMemberID) {
+    public void setPlaylistMemberID(PlaylistMemberID playlistMemberID) {
         this.playlistMemberID = playlistMemberID;
     }
 
@@ -76,4 +76,12 @@ public class PlaylistMember {
     public void setNote(String note) {
         this.note = note;
     }
+
+    // public Integer getTrackNumber() {
+    //     return trackNumber;
+    // }
+
+    // public void setTrackNumber(Integer trackNumber) {
+    //     this.trackNumber = trackNumber;
+    // }
 }
