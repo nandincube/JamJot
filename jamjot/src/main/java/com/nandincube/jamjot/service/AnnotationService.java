@@ -3,6 +3,7 @@ package com.nandincube.jamjot.service;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,9 +13,11 @@ import org.springframework.web.client.RestClient;
 import com.nandincube.jamjot.model.Playlist;
 import com.nandincube.jamjot.model.PlaylistMember;
 import com.nandincube.jamjot.model.PlaylistMemberID;
+import com.nandincube.jamjot.model.Track;
 import com.nandincube.jamjot.model.User;
 import com.nandincube.jamjot.repository.PlaylistMemberRepository;
 import com.nandincube.jamjot.repository.PlaylistRepository;
+import com.nandincube.jamjot.repository.TrackRepository;
 import com.nandincube.jamjot.repository.UserRepository;
 import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.exceptions.TrackNotFoundException;
@@ -22,6 +25,7 @@ import com.nandincube.jamjot.exceptions.UserNotFoundException;
 import com.nandincube.jamjot.dto.PlaylistDTO;
 import com.nandincube.jamjot.dto.PlaylistsResponse;
 import com.nandincube.jamjot.dto.SpotifyTrackDTO;
+import com.nandincube.jamjot.dto.TrackInfo;
 import com.nandincube.jamjot.dto.TrackDTO;
 import com.nandincube.jamjot.dto.TracksResponse;
 
@@ -29,15 +33,17 @@ import com.nandincube.jamjot.dto.TracksResponse;
 public class AnnotationService {
     private final PlaylistRepository playlistRepository;
     private final PlaylistMemberRepository playlistMemberRepository;
+    private final TrackRepository trackRepository;
     private final UserRepository userRepository;
     private final RestClient restClient;
 
     private static final String SPOTIFY_BASE_URL = "https://api.spotify.com/v1";
 
     public AnnotationService(PlaylistRepository playlistRepository, PlaylistMemberRepository playlistMemberRepository,
-            UserRepository userRepository, RestClient restClient) {
+            UserRepository userRepository, TrackRepository trackRepository, RestClient restClient) {
         this.playlistRepository = playlistRepository;
         this.playlistMemberRepository = playlistMemberRepository;
+        this.trackRepository = trackRepository;
         this.restClient = restClient;
         this.userRepository = userRepository;
     }
@@ -80,36 +86,41 @@ public class AnnotationService {
      *         otherwise.
      */
     private boolean playlistExists(String playlistID, String userID) {
-        PlaylistDTO playlist = getPlaylistFromSpotify(playlistID);  
-        if(playlist == null || !playlist.owner().id().equals(userID)){
+        PlaylistDTO playlist = getPlaylistFromSpotify(playlistID);
+        if (playlist == null || !playlist.owner().id().equals(userID)) {
             return false;
         }
         return true;
     }
 
-      private boolean trackExists(String playlistID, String userID, String trackID, Integer trackNumber) {
-        ArrayList<TrackDTO> tracks = getTracksFromSpotify(playlistID);  
-        int count = (int) tracks.stream().filter(t -> 
-            t.track_number() == trackNumber && t.track()
-            
-            .track().id().equals(trackID)
-      ).count();
+    private boolean trackExists(String playlistID, String userID, String trackID, Integer trackNumber) {
+        ArrayList<TrackDTO> tracks = getTracksFromSpotify(playlistID);
+        int count = (int) tracks.stream().filter(t -> t.track_number() == trackNumber && t.track()
+                .track().id().equals(trackID)).count();
         return count > 0;
     }
 
-
     private PlaylistDTO getPlaylistFromSpotify(String playlistID) {
-        String playlistURL = SPOTIFY_BASE_URL +  "/playlists/"+ playlistID;
-   
+        String playlistURL = SPOTIFY_BASE_URL + "/playlists/" + playlistID;
+
         PlaylistDTO playlistDTO = restClient.get()
-                    .uri(playlistURL)
-                    .retrieve()
-                    .body(PlaylistDTO.class);
+                .uri(playlistURL)
+                .retrieve()
+                .body(PlaylistDTO.class);
 
         return playlistDTO;
     }
 
+    private TrackInfo getTrackFromSpotify(String trackID) {
+        String trackURL = SPOTIFY_BASE_URL + "/tracks/" + trackID;
 
+        TrackInfo spotifyTrackDTO = restClient.get()
+                .uri(trackURL)
+                .retrieve()
+                .body(TrackInfo.class);
+
+        return spotifyTrackDTO;
+    }
 
     /**
      * * TODO:
@@ -144,10 +155,9 @@ public class AnnotationService {
                 break;
             }
 
-            
-            for(int i=0; i< response.items().size(); i++){
+            for (int i = 0; i < response.items().size(); i++) {
                 SpotifyTrackDTO apiTrackDTO = response.items().get(i);
-                trackDTOs.add(new TrackDTO(apiTrackDTO, i+1));
+                trackDTOs.add(new TrackDTO(apiTrackDTO, i + 1));
             }
 
             next = response.next();
@@ -167,7 +177,7 @@ public class AnnotationService {
      * @throws PlaylistNotFoundException - If the playlist does not exist or does
      *                                   not belong to the user.
      */
-    private Playlist getPlaylist(String userID, String playlistID) throws PlaylistNotFoundException {
+    private Playlist getPlaylistFromDB(String userID, String playlistID) throws PlaylistNotFoundException {
         Optional<Playlist> playlistOptional = playlistRepository.findById(playlistID);
 
         if (playlistOptional.isEmpty()) {
@@ -194,24 +204,25 @@ public class AnnotationService {
      */
     public String getPlaylistNote(String userID, String playlistID) throws PlaylistNotFoundException {
         try {
-            Playlist playlist = getPlaylist(userID, playlistID);
+            Playlist playlist = getPlaylistFromDB(userID, playlistID);
             return playlist.getNote();
         } catch (PlaylistNotFoundException e) {
             if (playlistExists(playlistID, userID)) { // Playlist exists on Spotify but not in jamjot DB
-                return null;
+                return "";
             } else {
                 throw new PlaylistNotFoundException();
             }
         }
     }
 
-    public Playlist updatePlaylistNote(String userID, String playlistID, String note) throws PlaylistNotFoundException, UserNotFoundException {
+    public Playlist updatePlaylistNote(String userID, String playlistID, String note)
+            throws PlaylistNotFoundException, UserNotFoundException {
         Playlist playlist;
         try {
-            playlist = getPlaylist(userID, playlistID);
+            playlist = getPlaylistFromDB(userID, playlistID);
         } catch (PlaylistNotFoundException e) {
             if (playlistExists(playlistID, userID)) { // Playlist exists on Spotify but not in jamjot DB
-                playlist = createNewPlaylistEntity(userID, playlistID, note);
+                playlist = createNewPlaylistEntity(userID, playlistID);
             } else {
                 throw new PlaylistNotFoundException();
             }
@@ -220,14 +231,15 @@ public class AnnotationService {
         return playlistRepository.save(playlist);
     }
 
-    public Playlist deletePlaylistNote(String userID, String playlistID) throws PlaylistNotFoundException, UserNotFoundException {
-        return updatePlaylistNote(userID, playlistID, null);
+    public Playlist deletePlaylistNote(String userID, String playlistID)
+            throws PlaylistNotFoundException, UserNotFoundException {
+        return updatePlaylistNote(userID, playlistID, "");
     }
 
-    private PlaylistMember getTrack(String userID, String playlistID, String trackID, Integer trackNumber)
+    private PlaylistMember getTrackFromDB(String userID, String playlistID, String trackID, Integer trackNumber)
             throws PlaylistNotFoundException, TrackNotFoundException {
-        
-        getPlaylist(userID, playlistID);
+
+        getPlaylistFromDB(userID, playlistID);
         PlaylistMemberID playlistMemberID = new PlaylistMemberID(playlistID, trackID, trackNumber);
         Optional<PlaylistMember> trackInPlaylist = playlistMemberRepository.findById(playlistMemberID);
 
@@ -238,57 +250,96 @@ public class AnnotationService {
         return trackInPlaylist.get();
     }
 
-
-    //Check DB for note 
+    // Check DB for note
     public String getTrackNote(String userID, String playlistID, String trackID, Integer trackNumber)
             throws TrackNotFoundException, PlaylistNotFoundException {
-                PlaylistMember trackInPlaylist ;
-            try{
-               trackInPlaylist = getTrack(userID, playlistID, trackID, trackNumber);
-            }catch(PlaylistNotFoundException e){
-                if(playlistExists(playlistID, userID)){
-                    return null;
-                }else{
-                    throw new PlaylistNotFoundException();
-                }
-            } catch(TrackNotFoundException e){
-                if(trackExists(playlistID, userID, trackID, trackNumber)){
-                    return null;
-                }else{
-                    throw new TrackNotFoundException();
-                }
+        PlaylistMember trackInPlaylist;
+        try {
+            trackInPlaylist = getTrackFromDB(userID, playlistID, trackID, trackNumber);
+        } catch (PlaylistNotFoundException e) {
+            if (playlistExists(playlistID, userID)) {
+                return "";
+            } else {
+                throw new PlaylistNotFoundException();
             }
-        
+        } catch (TrackNotFoundException e) {
+            if (trackExists(playlistID, userID, trackID, trackNumber)) {
+                return "";
+            } else {
+                throw new TrackNotFoundException();
+            }
+        }
+
         return trackInPlaylist.getNote();
     }
 
-    
-
-
     public PlaylistMember updateTrackNote(String userID, String playlistID, String trackID, Integer trackNumber,
-            String note) throws PlaylistNotFoundException, TrackNotFoundException {
-        if (getPlaylist(userID, playlistID) == null)
-            return null;
+            String note) throws PlaylistNotFoundException, TrackNotFoundException, UserNotFoundException {
+        PlaylistMember trackInPlaylist = null;
 
-        PlaylistMember trackInPlaylist = getTrack(userID, playlistID, trackID, trackNumber);
-        trackInPlaylist.setNote(note);
-        return playlistMemberRepository.save(trackInPlaylist);
+        try {
+            trackInPlaylist = getTrackFromDB(userID, playlistID, trackID, trackNumber);
+            trackInPlaylist.setNote(note);
+            System.out.println("***Updating note for track in playlist in DB.");
+            return playlistMemberRepository.save(trackInPlaylist);
+        } catch (PlaylistNotFoundException e) {
+            if (playlistExists(playlistID, userID)) {
+                Playlist playlist = createNewPlaylistEntity(userID, playlistID);
+                playlistRepository.save(playlist);
+                updateTrackNote(userID, playlistID, trackID, trackNumber, note);
+            } else {
+                throw new PlaylistNotFoundException();
+            }
+        } catch (TrackNotFoundException e) {
+            if (trackExists(playlistID, userID, trackID, trackNumber)) {
+                Track track = createNewTrackEntity(trackID, trackNumber);
+                trackRepository.save(track);
+                Playlist playlist = getPlaylistFromDB(userID, playlistID);
+                PlaylistMember playlistMember = new PlaylistMember(track, playlist, trackNumber);
+                playlistMemberRepository.save(playlistMember);
+                System.out.println("Adding track to playlist in DB: " + playlist.getName());
+                track.addToPlaylist(playlistMember);
+                trackRepository.save(track);
+                System.out.println("***Track added to playlist in DB.");
+                updateTrackNote(userID, playlistID, trackID, trackNumber, note);
+            } else {
+                throw new TrackNotFoundException();
+            }
+        }
+
+        return trackInPlaylist;
+
     }
 
     public PlaylistMember deleteTrackNote(String userID, String playlistID, String trackID, Integer trackNumber)
-            throws PlaylistNotFoundException, TrackNotFoundException {
-        return updateTrackNote(userID, playlistID, trackID, trackNumber, null);
+            throws PlaylistNotFoundException, TrackNotFoundException, UserNotFoundException {
+        return updateTrackNote(userID, playlistID, trackID, trackNumber, "");
     }
 
-    public Playlist createNewPlaylistEntity(String userID, String playlistID, String note) throws UserNotFoundException {
-        
+    private Playlist createNewPlaylistEntity(String userID, String playlistID) throws UserNotFoundException {
+
         PlaylistDTO playlistDTO = getPlaylistFromSpotify(playlistID);
-        
+
         Optional<User> user = userRepository.findById(userID);
         if (!user.isPresent()) {
             throw new UserNotFoundException();
         }
 
-       return new Playlist(playlistID, playlistDTO.name(), user.get());
+        return new Playlist(playlistID, playlistDTO.name(), user.get());
+    }
+
+    private Track createNewTrackEntity(String trackID, int trackNumber) throws UserNotFoundException {
+        System.out.println("Creating new track entity for trackID: " + trackID);
+        TrackInfo trackDTO = getTrackFromSpotify(trackID);
+        String trackName = trackDTO.name();
+        ArrayList<String> artists = trackDTO.artists().stream()
+                .map(artist -> artist.name())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        System.out.println("Track Name: " + trackName);
+        System.out.println("Artists: " + String.join(", ", artists));
+
+        return new Track(trackID, trackName, artists);
+
     }
 }

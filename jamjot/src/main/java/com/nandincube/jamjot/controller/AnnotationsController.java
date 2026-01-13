@@ -2,7 +2,6 @@ package com.nandincube.jamjot.controller;
 
 import java.util.ArrayList;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -157,17 +156,20 @@ public class AnnotationsController {
     @PostMapping("/playlists/{playlistID}/track/{trackID}/note")
     public ResponseEntity<String> updateTrackNote(Authentication userToken, @PathVariable String playlistID,
             @PathVariable String trackID,
-            @RequestParam(required = true) Integer trackNumber, @RequestBody String note) {
+            @RequestParam(required = true) Integer trackNumber, @RequestBody NoteRequest note) {
 
         String userID = userToken.getName();
 
         try {
-            annotationService.updateTrackNote(userID, playlistID, trackID, trackNumber, note);
+            annotationService.updateTrackNote(userID, playlistID, trackID, trackNumber, note.getNote());
             return ResponseEntity.ok("Track Note Updated!");
         } catch (PlaylistNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(e.getMessage());
         } catch (TrackNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(e.getMessage());
         }
@@ -191,6 +193,9 @@ public class AnnotationsController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(e.getMessage());
         } catch (TrackNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+        } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(e.getMessage());
         }

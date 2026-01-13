@@ -1,6 +1,7 @@
 package com.nandincube.jamjot.model;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.lang.NonNull;
 
@@ -22,19 +23,19 @@ public class Track {
     private String name;
 
     @NonNull
-    private String artists;
+    private List<String> artists;
 
-    @Column(name="image_url", nullable = true)
-    private String imageURL;
+    // @Column(name="image_url", nullable = true)
+    // private String imageURL;
 
 
     @OneToMany(mappedBy = "track")
-    private ArrayList<PlaylistMember> playlists;
+    private List<PlaylistMember> playlists;
 
-    public Track(String trackID, String name, String imageURL, String artists){
+    public Track(String trackID, String name , List<String> artists){
         this.trackID = trackID;
         this.name = name;
-        this.imageURL = imageURL;
+        // this.imageURL = imageURL;
         //this.note = null;
         this.artists = artists;
         this.playlists = new ArrayList<>();
@@ -62,15 +63,15 @@ public class Track {
     // }
 
         
-    public String getImageURL(){
-        return imageURL;
-    }
+    // public String getImageURL(){
+    //     return imageURL;
+    // }
 
-    public String getArtists(){
+    public List<String> getArtists(){
         return artists;
     }
 
-    public ArrayList<PlaylistMember> getPlaylists(){
+    public List<PlaylistMember> getPlaylists(){
         return playlists;
     }
 
@@ -78,11 +79,17 @@ public class Track {
     //     return playlists.add(playlist);
     // }
 
-    public boolean addToPlaylist(Playlist playlist, Integer trackNumber){
-        PlaylistMember playlistMember = new PlaylistMember(this, playlist, trackNumber);
+    // public boolean addToPlaylist(Playlist playlist, Integer trackNumber){
+    //     PlaylistMember playlistMember = new PlaylistMember(this, playlist, trackNumber);
+
+    //     return playlists.add(playlistMember);
+    // }
+
+
+    public boolean addToPlaylist(PlaylistMember playlistMember){
+        
         return playlists.add(playlistMember);
     }
-
     public void setTrackID(String trackID) {
         this.trackID = trackID;
     }
@@ -91,13 +98,13 @@ public class Track {
         this.name = name;
     }
 
-    public void setArtists(String artists) {
+    public void setArtists(ArrayList<String> artists) {
         this.artists = artists;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
-    }
+    // public void setImageURL(String imageURL) {
+    //     this.imageURL = imageURL;
+    // }
 
     public void setPlaylists(ArrayList<PlaylistMember> playlists) {
         this.playlists = playlists;

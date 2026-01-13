@@ -38,7 +38,7 @@ public class PlaylistMember {
         this.playlist = playlist;
         this.track = track;
         // this.trackNumber = trackNumber;
-        this.note = null;
+        this.note = "";
         this.playlistMemberID = new PlaylistMemberID(track.getTrackID(), playlist.getPlaylistID(), trackNumber);
     }
 
