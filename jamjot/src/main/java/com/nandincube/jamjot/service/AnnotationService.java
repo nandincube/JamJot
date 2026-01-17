@@ -240,7 +240,7 @@ public class AnnotationService {
             throws PlaylistNotFoundException, TrackNotFoundException {
 
         getPlaylistFromDB(userID, playlistID);
-        PlaylistMemberID playlistMemberID = new PlaylistMemberID(playlistID, trackID, trackNumber);
+        PlaylistMemberID playlistMemberID = new PlaylistMemberID(trackID, playlistID, trackNumber);
         Optional<PlaylistMember> trackInPlaylist = playlistMemberRepository.findById(playlistMemberID);
 
         if (trackInPlaylist.isEmpty()) {
@@ -280,34 +280,25 @@ public class AnnotationService {
         try {
             trackInPlaylist = getTrackFromDB(userID, playlistID, trackID, trackNumber);
             trackInPlaylist.setNote(note);
-            System.out.println("***Updating note for track in playlist in DB.");
             return playlistMemberRepository.save(trackInPlaylist);
         } catch (PlaylistNotFoundException e) {
             if (playlistExists(playlistID, userID)) {
                 Playlist playlist = createNewPlaylistEntity(userID, playlistID);
                 playlistRepository.save(playlist);
-                updateTrackNote(userID, playlistID, trackID, trackNumber, note);
+                return updateTrackNote(userID, playlistID, trackID, trackNumber, note);
             } else {
                 throw new PlaylistNotFoundException();
             }
         } catch (TrackNotFoundException e) {
             if (trackExists(playlistID, userID, trackID, trackNumber)) {
                 Track track = createNewTrackEntity(trackID, trackNumber);
-                trackRepository.save(track);
                 Playlist playlist = getPlaylistFromDB(userID, playlistID);
-                PlaylistMember playlistMember = new PlaylistMember(track, playlist, trackNumber);
-                playlistMemberRepository.save(playlistMember);
-                System.out.println("Adding track to playlist in DB: " + playlist.getName());
-                track.addToPlaylist(playlistMember);
-                trackRepository.save(track);
-                System.out.println("***Track added to playlist in DB.");
-                updateTrackNote(userID, playlistID, trackID, trackNumber, note);
+                createTrackPlaylistRelationship(track, playlist, trackNumber);
+                return updateTrackNote(userID, playlistID, trackID, trackNumber, note);
             } else {
                 throw new TrackNotFoundException();
             }
         }
-
-        return trackInPlaylist;
 
     }
 
@@ -325,21 +316,26 @@ public class AnnotationService {
             throw new UserNotFoundException();
         }
 
-        return new Playlist(playlistID, playlistDTO.name(), user.get());
+        Playlist newPlaylist = new Playlist(playlistID, playlistDTO.name(), user.get());
+        return playlistRepository.save(newPlaylist);
     }
 
     private Track createNewTrackEntity(String trackID, int trackNumber) throws UserNotFoundException {
-        System.out.println("Creating new track entity for trackID: " + trackID);
         TrackInfo trackDTO = getTrackFromSpotify(trackID);
         String trackName = trackDTO.name();
-        ArrayList<String> artists = trackDTO.artists().stream()
+        String artists = trackDTO.artists().stream()
                 .map(artist -> artist.name())
-                .collect(Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.joining(", "));
 
-        System.out.println("Track Name: " + trackName);
-        System.out.println("Artists: " + String.join(", ", artists));
+        Track newTrack =   new Track(trackID, trackName, artists);
+        return trackRepository.save(newTrack);
 
-        return new Track(trackID, trackName, artists);
+    }
 
+    private void createTrackPlaylistRelationship(Track track, Playlist playlist, Integer trackNumber) {
+        PlaylistMember playlistMember = new PlaylistMember(track, playlist, trackNumber);
+        playlistMemberRepository.save(playlistMember);
+        track.addToPlaylist(playlistMember);
+        trackRepository.save(track);
     }
 }

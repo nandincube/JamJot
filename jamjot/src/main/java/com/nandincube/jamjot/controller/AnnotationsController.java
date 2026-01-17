@@ -61,6 +61,17 @@ public class AnnotationsController {
         }
     }
 
+    // @GetMapping("/playlists/{playlistID}/notes")
+    // public ResponseEntity<String> getAllPlaylistNote(Authentication userToken, @PathVariable String playlistID) {
+    //     String userID = userToken.getName();
+    //     try {
+    //         return ResponseEntity.ok(annotationService.getAllPlaylistNotes(userID, playlistID));
+    //     } catch (PlaylistNotFoundException e) {
+    //         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+    //                 .body(e.getMessage());
+    //     }
+    // }
+
     /**
      * This method updates the note for a specific playlist for the authenticated user.
      * @param userToken - Authentication token of the user.
@@ -112,7 +123,7 @@ public class AnnotationsController {
 
  
     /**
- * TODO: add error handling in endpoint
+ * TODO: Done but need to add error handling in endpoint
      * @param playlistID
      * @return
      */
@@ -149,8 +160,12 @@ public class AnnotationsController {
     }
 
     /**
-     * TODO:
-     * 
+     * This method updates the note for a specific track in a playlist for the authenticated user.
+     * @param userToken
+     * @param playlistID
+     * @param trackID
+     * @param trackNumber
+     * @param note
      * @return
      */
     @PostMapping("/playlists/{playlistID}/track/{trackID}/note")
@@ -176,8 +191,11 @@ public class AnnotationsController {
     }
 
     /**
-     * TODO:
-     * 
+     * This method deletes the note for a specific track in a playlist for the authenticated user.
+     * @param userToken
+     * @param playlistID
+     * @param trackID
+     * @param trackNumber
      * @return
      */
     @DeleteMapping("/playlists/{playlistID}/track/{trackID}/note")

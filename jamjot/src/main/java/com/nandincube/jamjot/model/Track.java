@@ -23,7 +23,7 @@ public class Track {
     private String name;
 
     @NonNull
-    private List<String> artists;
+    private String artists;
 
     // @Column(name="image_url", nullable = true)
     // private String imageURL;
@@ -32,7 +32,8 @@ public class Track {
     @OneToMany(mappedBy = "track")
     private List<PlaylistMember> playlists;
 
-    public Track(String trackID, String name , List<String> artists){
+    public Track(String trackID, String name , String artists){
+        
         this.trackID = trackID;
         this.name = name;
         // this.imageURL = imageURL;
@@ -67,7 +68,7 @@ public class Track {
     //     return imageURL;
     // }
 
-    public List<String> getArtists(){
+    public String getArtists(){
         return artists;
     }
 
@@ -98,7 +99,7 @@ public class Track {
         this.name = name;
     }
 
-    public void setArtists(ArrayList<String> artists) {
+    public void setArtists(String artists) {
         this.artists = artists;
     }
 
