@@ -1,7 +1,10 @@
 package com.nandincube.jamjot.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class NoteRequest {
     
+    @Schema(example = "This is a sample note.", description = "The note content associated with a playlist or track")
     private String note;
 
     public NoteRequest() {
