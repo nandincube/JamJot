@@ -14,8 +14,9 @@ FROM eclipse-temurin:21-jdk-jammy as deps
 WORKDIR /build
 
 # Copy the mvnw wrapper with executable permissions.
-COPY --chmod=0755 mvnw mvnw
+COPY mvnw mvnw
 COPY .mvn/ .mvn/
+RUN chmod +x mvnw
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.m2 so that subsequent builds don't have to
