@@ -34,7 +34,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql
     environment:
-      - POSTGRES_DB=jamjot_db
+      - POSTGRES_DB=jamjot
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     expose:
