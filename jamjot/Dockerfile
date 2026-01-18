@@ -37,6 +37,8 @@ FROM deps as package
 WORKDIR /build
 
 COPY . .
+RUN chmod +x mvnw
+
 RUN  --mount=type=cache,target=/root/.m2 \
     ./mvnw package -DskipTests && \
     mv target/$(./mvnw help:evaluate -Dexpression=project.artifactId -q -DforceStdout)-$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout).jar target/app.jar
