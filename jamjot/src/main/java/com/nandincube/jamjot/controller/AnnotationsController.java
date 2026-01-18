@@ -20,6 +20,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
@@ -50,7 +52,10 @@ public class AnnotationsController {
     @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
     @Operation(summary = "Get Playlists", description = "Retrieve all playlists made by the authenticated user from Spotify")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Playlists retrieved successfully")
+            @ApiResponse(responseCode = "200", description = "Playlists retrieved successfully", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(implementation = PlaylistDTO.class)) }
+
+            )
     })
     @GetMapping("/playlists")
     public ResponseEntity<ArrayList<PlaylistDTO>> getPlaylists() {
@@ -69,8 +74,11 @@ public class AnnotationsController {
     @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
     @Operation(summary = "Get Playlist Note", description = "Retrieve the note for a specific playlist")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "Playlist not found"),
-            @ApiResponse(responseCode = "200", description = "Playlist note retrieved successfully")
+            @ApiResponse(responseCode = "404", description = "Playlist not found", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find playlist!")) }),
+
+            @ApiResponse(responseCode = "200", description = "Playlist note retrieved successfully", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Sample playlist note")) })
     })
     @GetMapping("/playlists/{playlistID}/note")
     public ResponseEntity<String> getPlaylistNote(Authentication userToken,
@@ -96,8 +104,11 @@ public class AnnotationsController {
     @Tag(name = "Add/Update", description = "Endpoints for adding or updating playlist and track notes")
     @Operation(summary = "Add/Update Playlist Note", description = "Add or Update the note for a specific playlist ")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "User or playlist not found"),
-            @ApiResponse(responseCode = "200", description = "Playlist note updated successfully")
+            @ApiResponse(responseCode = "404", description = "User or playlist not found", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find user!")) }),
+
+            @ApiResponse(responseCode = "200", description = "Playlist note updated successfully", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Playlist Note Updated!")) })
     })
     @PostMapping("/playlists/{playlistID}/note")
     public ResponseEntity<String> updatePlaylistNote(Authentication userToken,
@@ -129,8 +140,12 @@ public class AnnotationsController {
     @Tag(name = "Delete", description = "Endpoints for deleting playlist and track notes")
     @Operation(summary = "Delete Playlist Note", description = "Delete the note for a specific playlist")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "User or playlist not found"),
-            @ApiResponse(responseCode = "200", description = "Playlist note deleted successfully")
+            @ApiResponse(responseCode = "404", description = "User or playlist not found", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find playlist!")) }),
+
+            @ApiResponse(responseCode = "200", description = "Playlist note deleted successfully", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Playlist Note Deleted!"))
+            })
     })
     @DeleteMapping("/playlists/{playlistID}/note")
     public ResponseEntity<String> deletePlaylistNote(Authentication userToken,
@@ -159,7 +174,8 @@ public class AnnotationsController {
     @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
     @Operation(summary = "Get Tracks in Playlist", description = "Retrieve all tracks in a specific playlist from Spotify")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Tracks retrieved successfully"),
+            @ApiResponse(responseCode = "200", description = "Tracks retrieved successfully", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(implementation = TrackDTO.class)) }),
     })
     @GetMapping("/playlists/{playlistID}/tracks")
     public ResponseEntity<ArrayList<TrackDTO>> getTracks(
@@ -181,9 +197,12 @@ public class AnnotationsController {
     @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
     @Operation(summary = "Get Track Note", description = "Retrieve the note for a specific track in a playlist")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "User or playlist not found"),
-            @ApiResponse(responseCode = "200", description = "Track note retrieved successfully")
-    })
+            @ApiResponse(responseCode = "404", description = "Track or playlist not found", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find playlist!")) }),
+
+            @ApiResponse(responseCode = "200", description = "Track note retrieved successfully", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Sample track note"))
+            }) })
     @GetMapping("/playlists/{playlistID}/track/{trackID}/note")
     public ResponseEntity<String> getTrackNote(Authentication userToken,
             @Parameter(description = "The Spotify ID for the specified playlist", required = true) @PathVariable String playlistID,
@@ -216,9 +235,12 @@ public class AnnotationsController {
     @Tag(name = "Add/Update", description = "Endpoints for adding or updating playlist and track notes")
     @Operation(summary = "Add/Update Track Note", description = "Add or Update the note for a specific track in a playlist")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "User, track or playlist not found"),
-            @ApiResponse(responseCode = "200", description = "Track note updated successfully")
-    })
+            @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find track or track number mismatch!")) }),
+                    
+            @ApiResponse(responseCode = "200", description = "Track note updated successfully", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Track Note Updated!"))
+            }) })
     @PostMapping("/playlists/{playlistID}/track/{trackID}/note")
     public ResponseEntity<String> updateTrackNote(Authentication userToken,
             @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
@@ -256,9 +278,12 @@ public class AnnotationsController {
     @Tag(name = "Delete", description = "Endpoints for deleting playlist and track notes")
     @Operation(summary = "Delete Track Note", description = "Delete the note for a specific track in a playlist")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "404", description = "User, track or playlist not found"),
-            @ApiResponse(responseCode = "200", description = "Track note deleted successfully")
-    })
+            @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find track or track number mismatch!")) }),
+
+            @ApiResponse(responseCode = "200", description = "Track note deleted successfully", content = {
+                    @Content(mediaType = "*/*", schema = @Schema(example = "Track Note Deleted!"))
+            }) })
     @DeleteMapping("/playlists/{playlistID}/track/{trackID}/note")
     public ResponseEntity<String> deleteTrackNote(Authentication userToken,
             @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
