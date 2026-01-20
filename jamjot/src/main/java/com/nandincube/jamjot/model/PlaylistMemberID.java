@@ -6,7 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Positive;
 
-//https://www.baeldung.com/spring-jpa-embedded-method-parameters
 @Embeddable
 public class PlaylistMemberID implements Serializable {
 

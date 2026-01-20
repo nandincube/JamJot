@@ -8,6 +8,7 @@ public record SpotifyTrackDTO(
     String added_at,
     @Schema(description = "Information about the track")
     TrackInfo track
+    
 ) {
 
 
