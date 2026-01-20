@@ -26,18 +26,12 @@ public class PlaylistMember {
     @JoinColumn(name ="playlist_id")
     private Playlist playlist;
 
-    // @MapsId("trackNumber")
-    // @Column(name ="track_number", nullable = false)
-    // @Positive
-    // private Integer trackNumber;
-
     @Column(length=400)
     private String note;
 
     public PlaylistMember(Track track, Playlist playlist, int trackNumber){
         this.playlist = playlist;
         this.track = track;
-        // this.trackNumber = trackNumber;
         this.note = "";
         this.playlistMemberID = new PlaylistMemberID(track.getTrackID(), playlist.getPlaylistID(), trackNumber);
     }
@@ -77,11 +71,4 @@ public class PlaylistMember {
         this.note = note;
     }
 
-    // public Integer getTrackNumber() {
-    //     return trackNumber;
-    // }
-
-    // public void setTrackNumber(Integer trackNumber) {
-    //     this.trackNumber = trackNumber;
-    // }
 }
