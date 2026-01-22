@@ -363,8 +363,8 @@ public class AnnotationService {
      * @throws TrackNotFoundException
      * @throws PlaylistNotFoundException
      */
-    private List<Timestamp> getTimestampNotes(String userID, String playlistID, String trackID, Integer trackNumber)
-            throws TrackNotFoundException, PlaylistNotFoundException {
+    public List<Timestamp> getTimestampNotes(String userID, String playlistID, String trackID, Integer trackNumber)
+            throws TrackNotFoundException, PlaylistNotFoundException, UserNotFoundException {
         PlaylistMember trackInPlaylist;
         try {
             trackInPlaylist = getTrackFromDB(userID, playlistID, trackID, trackNumber);
@@ -386,7 +386,7 @@ public class AnnotationService {
     }
 
 
-    private Timestamp addTimestampNote(String userID, String playlistID, String trackID, Integer trackNumber,
+    public Timestamp addTimestampNote(String userID, String playlistID, String trackID, Integer trackNumber,
             String startInMins, String endInMins, String note)
             throws PlaylistNotFoundException, TrackNotFoundException, UserNotFoundException {
 
@@ -417,7 +417,7 @@ public class AnnotationService {
 
     
 
-    private Timestamp updateTimestampNote(String userID, String playlistID, String trackID, Integer trackNumber,
+    public Timestamp updateTimestampNote(String userID, String playlistID, String trackID, Integer trackNumber,
             String note, String timestampID) throws PlaylistNotFoundException, TrackNotFoundException, UserNotFoundException, TimestampNotFoundException {
 
         PlaylistMember trackInPlaylist = null;
@@ -454,7 +454,7 @@ public class AnnotationService {
         }
     }
 
-    private void deleteTimestampNote(String userID, String playlistID, String trackID, Integer trackNumber,
+    public void deleteTimestampNote(String userID, String playlistID, String trackID, Integer trackNumber,
             String timestampID) throws PlaylistNotFoundException, TrackNotFoundException, UserNotFoundException, TimestampNotFoundException {
 
         PlaylistMember trackInPlaylist = getTrackFromDB(userID, playlistID, trackID, trackNumber);
