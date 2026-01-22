@@ -25,10 +25,6 @@ public class Track {
     @NonNull
     private String artists;
 
-    // @Column(name="image_url", nullable = true)
-    // private String imageURL;
-
-
     @OneToMany(mappedBy = "track")
     private List<PlaylistMember> playlists;
 
@@ -36,8 +32,6 @@ public class Track {
         
         this.trackID = trackID;
         this.name = name;
-        // this.imageURL = imageURL;
-        //this.note = null;
         this.artists = artists;
         this.playlists = new ArrayList<>();
     }
@@ -54,19 +48,6 @@ public class Track {
         return name;
     }
 
-        
-    // public String getNote(){
-    //     return note;
-    // }
-
-    // public void setNote(String note){
-    //     this.note = note;
-    // }
-
-        
-    // public String getImageURL(){
-    //     return imageURL;
-    // }
 
     public String getArtists(){
         return artists;
@@ -75,17 +56,6 @@ public class Track {
     public List<PlaylistMember> getPlaylists(){
         return playlists;
     }
-
-    // public boolean addToPlaylist(PlaylistMember playlist){
-    //     return playlists.add(playlist);
-    // }
-
-    // public boolean addToPlaylist(Playlist playlist, Integer trackNumber){
-    //     PlaylistMember playlistMember = new PlaylistMember(this, playlist, trackNumber);
-
-    //     return playlists.add(playlistMember);
-    // }
-
 
     public boolean addToPlaylist(PlaylistMember playlistMember){
         
@@ -103,13 +73,8 @@ public class Track {
         this.artists = artists;
     }
 
-    // public void setImageURL(String imageURL) {
-    //     this.imageURL = imageURL;
-    // }
-
     public void setPlaylists(ArrayList<PlaylistMember> playlists) {
         this.playlists = playlists;
     }
-
     
 }
