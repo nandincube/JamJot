@@ -473,6 +473,8 @@ public class AnnotationService {
     private Timestamp createNewTimestamp(String startInMins, String endInMins, String note, PlaylistMember playlistMember,
             String trackID) {
         TrackInfo trackInfo = getTrackFromSpotify(trackID);
+        startInMins = startInMins.trim();
+        endInMins = endInMins.trim();
         Pattern pattern = Pattern.compile("^(\\d{1,2}):(\\d{2})$");
         Matcher startMatcher = pattern.matcher(startInMins);
         Matcher endMatcher = pattern.matcher(endInMins);
