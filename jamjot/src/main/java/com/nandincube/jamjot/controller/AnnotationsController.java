@@ -31,9 +31,10 @@ import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.exceptions.TimestampNotFoundException;
 import com.nandincube.jamjot.exceptions.TrackNotFoundException;
 import com.nandincube.jamjot.exceptions.UserNotFoundException;
-import com.nandincube.jamjot.model.Timestamp;
 import com.nandincube.jamjot.dto.NoteRequest;
 import com.nandincube.jamjot.dto.PlaylistDTO;
+import com.nandincube.jamjot.dto.TimestampDTO;
+import com.nandincube.jamjot.dto.TimestampResponse;
 import com.nandincube.jamjot.dto.TrackDTO;
 
 @RestController
@@ -41,7 +42,7 @@ import com.nandincube.jamjot.dto.TrackDTO;
 @Tag(name = "Annotations API", description = "Endpoints for managing playlist and track annotations")
 public class AnnotationsController {
 
-        private static AnnotationService annotationService;
+        private final AnnotationService annotationService;
 
         public AnnotationsController(AnnotationService annotationService) {
                 this.annotationService = annotationService;
@@ -106,8 +107,8 @@ public class AnnotationsController {
          * @param note       - New note to be associated with the playlist.
          * @return ResponseEntity<String> - Confirmation message upon successful update.
          */
-        @Tag(name = "Add/Update", description = "Endpoints for adding or updating playlist and track notes")
-        @Operation(summary = "Add/Update Playlist Note", description = "Add or Update the note for a specific playlist ")
+        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
+        @Operation(summary = "Edit Playlist Note", description = "Add or Update the note for a specific playlist ")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User or playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find user!")) }),
@@ -116,7 +117,7 @@ public class AnnotationsController {
                                         @Content(mediaType = "*/*", schema = @Schema(example = "Playlist Note Updated!")) })
         })
         @PostMapping("/playlists/{playlistID}/note")
-        public ResponseEntity<String> updatePlaylistNote(Authentication userToken,
+        public ResponseEntity<String> editPlaylistNote(Authentication userToken,
                         @Parameter(description = "The Spotify ID for the specified playlist", required = true) @PathVariable String playlistID,
                         @RequestBody NoteRequest note) {
                 String userID = userToken.getName();
@@ -238,17 +239,17 @@ public class AnnotationsController {
          * @param note
          * @return
          */
-        @Tag(name = "Add/Update", description = "Endpoints for adding or updating playlist and track notes")
-        @Operation(summary = "Add/Update Track Note", description = "Add or Update the note for a specific track in a playlist")
+        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
+        @Operation(summary = "Edit Track Note", description = "Add or Update the note for a specific track in a playlist")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
-                                        @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find track or track number mismatch!")) }),
+                                        @Content(mediaType = "*/*") }),
 
                         @ApiResponse(responseCode = "200", description = "Track note updated successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(example = "Track Note Updated!"))
                         }) })
         @PostMapping("/playlists/{playlistID}/track/{trackID}/note")
-        public ResponseEntity<String> updateTrackNote(Authentication userToken,
+        public ResponseEntity<String> editTrackNote(Authentication userToken,
                         @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
                         @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
                         @Parameter(description = "The track number in playlist", required = true) @RequestParam(required = true) Integer trackNumber,
@@ -257,7 +258,7 @@ public class AnnotationsController {
                 String userID = userToken.getName();
 
                 try {
-                        annotationService.updateTrackNote(userID, playlistID, trackID, trackNumber, note.getNote());
+                        annotationService.editTrackNote(userID, playlistID, trackID, trackNumber, note.getNote());
                         return ResponseEntity.ok("Track Note Updated!");
                 } catch (PlaylistNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -313,8 +314,8 @@ public class AnnotationsController {
         }
 
 
-        @Tag(name = "Add/Update", description = "Endpoints for adding or updating playlist and track notes")
-        @Operation(summary = "Update Timestamp Note", description = "Update the note for a specific timestamp in a track")
+        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
+        @Operation(summary = "Edit Timestamp Note", description = "Edit the note for a specific timestamp in a track")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User, track, playlist or timestamp not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find timestamp!")) }),
@@ -327,7 +328,7 @@ public class AnnotationsController {
                         @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
                         @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
                         @Parameter(description = "The track number in playlist", required = true) @RequestParam(required = true) Integer trackNumber,
-                        @Parameter(description = "The timestamp ID for the specified timestamp", required = true) @PathVariable String timestampID,
+                        @Parameter(description = "The timestamp ID for the specified timestamp", required = true) @PathVariable Long timestampID,
                         @RequestBody NoteRequest note) {
 
                 String userID = userToken.getName();
@@ -351,8 +352,8 @@ public class AnnotationsController {
                 }
         }
 
-        @Tag(name = "Add/Update", description = "Endpoints for adding or updating playlist and track notes")
-        @Operation(summary = "Update Timestamp Note", description = "Update the note for a specific timestamp in a track")
+        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
+        @Operation(summary = "Add Timestamp Note", description = "Add the note for a specific timestamp in a track")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find playlist!")) }),
@@ -362,7 +363,7 @@ public class AnnotationsController {
                         @ApiResponse(responseCode = "200", description = "Timestamp note updated successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(example = "Timestamp Note Updated!"))
                         }) })
-        @PutMapping("/playlists/{playlistID}/tracks/{trackID}/timestamps/note")
+        @PostMapping("/playlists/{playlistID}/tracks/{trackID}/timestamps/note")
         public ResponseEntity<String> addTimestampNote(Authentication userToken,
                         @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
                         @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
@@ -395,33 +396,31 @@ public class AnnotationsController {
         @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
         @Operation(summary = "Get Timestamps in Track", description = "Retrieve all timestamps in a specific track in a playlist")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
-                                        @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find playlist!")) }),
-
+                        @ApiResponse(responseCode = "404", description = "User, track or playlist not found",
+                                content = {
+                                                @Content(mediaType = "*/*", schema = @Schema(example = "Sorry :( Could not find track or track number mismatch!")) }
+                        ),
                         @ApiResponse(responseCode = "200", description = "Timestamps retrieved successfully", content = {
-                                        @Content(mediaType = "*/*", schema = @Schema(implementation = Timestamp.class))
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = TimestampDTO.class))
                         }) })
 
         @GetMapping("/playlists/{playlistID}/track/{trackID}/timestamps")
-        public ResponseEntity<List<Timestamp>> getTimestampNotes(
+        public ResponseEntity<TimestampResponse> getTimestampNotes(
                         Authentication userToken,
                         @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
                         @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
                         @Parameter(description = "The track number in playlist", required = true) @RequestParam(required = true) Integer trackNumber) {
                 String userID = userToken.getName();
-                List<Timestamp> timestamps = null;
+                TimestampResponse timestamps = null;
                 try {
-                        timestamps = annotationService.getTimestampNotes(userID, playlistID, trackID, trackNumber);
+                        timestamps =  annotationService.getTimestampNotes(userID, playlistID, trackID, trackNumber);
                         return ResponseEntity.ok(timestamps);
                 } catch (PlaylistNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(timestamps);
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 } catch (TrackNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(timestamps);
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 }catch (UserNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(timestamps);
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                 }
         }
 
@@ -441,7 +440,7 @@ public class AnnotationsController {
                         @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
                         @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
                         @Parameter(description = "The track number in playlist", required = true) @RequestParam(required = true) Integer trackNumber,
-                        @Parameter(description = "The timestamp ID for the specified timestamp", required = true) @PathVariable String timestampID) {
+                        @Parameter(description = "The timestamp ID for the specified timestamp", required = true) @PathVariable Long timestampID) {
 
                 String userID = userToken.getName();
 

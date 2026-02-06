@@ -3,6 +3,7 @@ package com.nandincube.jamjot.model;
 import java.time.Duration;
 
 import io.micrometer.common.lang.NonNull;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,13 +18,18 @@ import jakarta.persistence.Table;
 public class Timestamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
+    @NonNull
+    @Column(name = "start_time")
     private Duration start;
 
+    @NonNull
+    @Column(name = "end_time")
     private Duration end;
 
     @NonNull
+    @Column(length=400)
     private String note;
 
  
@@ -43,6 +49,10 @@ public class Timestamp {
     }
 
     public Timestamp() {
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Duration getStart() {

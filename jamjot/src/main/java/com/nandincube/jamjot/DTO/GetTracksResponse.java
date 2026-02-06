@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record TracksResponse (
+public record GetTracksResponse (
     @Schema(description = "The URL for the next page of tracks")
     String next,
     @Schema(description = "The list of tracks")

@@ -33,7 +33,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8081}
   forward-headers-strategy: framework
 
 
