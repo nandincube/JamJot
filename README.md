@@ -1,7 +1,8 @@
 # JamJot
 Annotate songs in your Spotify playlist with personal notes.
 
-**Live API Demo (Swagger UI):**
+**Live API Demo (Swagger UI)**
+
 [Jamjot API Demo](https://jamjot.onrender.com)
 
 ## Overview
@@ -12,7 +13,7 @@ This project was built to explore third-party API integration, secure authentica
 ## Features
 
 - Spotify OAuth authentication
-- Retrieve user playlists vis Spotify API
+- Retrieve user playlists via Spotify API
 - Add top-level notes to playlists
 - Add track-level notes to songs/tracks within playlists
 - Add Timestamp-based notes to songs
@@ -28,9 +29,14 @@ This project was built to explore third-party API integration, secure authentica
 - Hosting: Render
 - External API: Spotify Web API
 
-# Live Demo
+## Live Demo
 
 The API is fully deployed and can be testsed interactively using Swagger UI:
 
 **Swagger UI:**
 (https://jamjot.onrender.com)
+
+
+## Motivation
+
+Jamjot was developed as a backend-focused personal project to explore OAuth integration, third-party API orchestration, and production-style REST API deployment with interactive documentation.
