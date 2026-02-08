@@ -43,4 +43,6 @@ logging:
       springframework:
         security: DEBUG
 
-      
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha

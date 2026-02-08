@@ -59,7 +59,8 @@ public class AnnotationsController {
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Playlists retrieved successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = PlaylistDTO.class)) }),
-                        @ApiResponse(responseCode = "500", description = "Internal Server Error")
+                        @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                                        @Content(mediaType = "*/*") })
         })
         @GetMapping("/playlists")
         public ResponseEntity<ArrayList<PlaylistDTO>> getPlaylists() {
@@ -235,8 +236,10 @@ public class AnnotationsController {
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Tracks retrieved successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = TrackDTO.class)) }),
-                        @ApiResponse(responseCode = "404", description = "Playlist not found"),
-                        @ApiResponse(responseCode = "500", description = "Internal Server Error")
+                        @ApiResponse(responseCode = "404", description = "Playlist not found", content = {
+                                        @Content(mediaType = "*/*") }),
+                        @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                                        @Content(mediaType = "*/*") })
         })
         @GetMapping("/playlists/{playlistID}/tracks")
         public ResponseEntity<ArrayList<TrackDTO>> getTracks(
