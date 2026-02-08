@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -24,7 +23,7 @@ public class PlaylistAnnotationService {
 
     private static final String SPOTIFY_BASE_URL = "https://api.spotify.com/v1";
 
-    public PlaylistAnnotationService(PlaylistService playlistService, 
+    public PlaylistAnnotationService(PlaylistService playlistService,
             UserRepository userRepository,
             RestClient restClient) {
         this.playlistService = playlistService;
@@ -61,31 +60,24 @@ public class PlaylistAnnotationService {
         return playlistDTOs;
     }
 
-  
     /**
      * This method retrieves playlist details from Spotify API given a playlist ID.
      * 
      * @param playlistID - The Spotify ID of the playlist.
      * @return PlaylistDTO - The details of the playlist.
      */
-    private PlaylistDTO getPlaylistInfoFromSpotify(String playlistID) throws PlaylistNotFoundException {
+    private PlaylistDTO getPlaylistInfoFromSpotify(String playlistID) {
         String playlistURL = SPOTIFY_BASE_URL + "/playlists/" + playlistID;
 
         PlaylistDTO playlistDTO = restClient.get()
                 .uri(playlistURL)
                 .retrieve()
                 .onStatus(status -> status == HttpStatus.NOT_FOUND, (req, res) -> {
-                        resouceNotFound();
-                        }
-                            )
-
+                    throw new RuntimeException(new PlaylistNotFoundException());
+                })
                 .body(PlaylistDTO.class);
 
         return playlistDTO;
-    }
-
-    private void resouceNotFound() throws PlaylistNotFoundException{
-        throw new PlaylistNotFoundException();
     }
 
     /**
@@ -96,7 +88,7 @@ public class PlaylistAnnotationService {
      * @return boolean - True if the playlist exists and belongs to the user, false
      *         otherwise.
      */
-    protected boolean playlistExistsOnSpotify(String playlistID, String userID) {
+    protected boolean playlistExistsOnSpotify(String playlistID, String userID)  {
         PlaylistDTO playlist = getPlaylistInfoFromSpotify(playlistID);
         if (playlist == null || !playlist.owner().id().equals(userID)) {
             return false;
@@ -131,9 +123,11 @@ public class PlaylistAnnotationService {
 
     /**
      * This method checks if a playlist exists in the jamjot DB.
-     * @param userID - ID of the authenticated user.
+     * 
+     * @param userID     - ID of the authenticated user.
      * @param playlistID - Spotify ID of the playlist.
-     * @return Boolean - True if the playlist exists in the jamjot DB, false otherwise.
+     * @return Boolean - True if the playlist exists in the jamjot DB, false
+     *         otherwise.
      */
     protected Boolean playlistExistsInDB(String userID, String playlistID) {
         try {
@@ -167,13 +161,18 @@ public class PlaylistAnnotationService {
     }
 
     /**
-     * This method edits the note for a specific playlist. If the playlist does not exist in the jamjot DB but exists on Spotify, it creates a new playlist entity in the jamjot DB and then updates the note.
-     * @param userID - ID of the user.
+     * This method edits the note for a specific playlist. If the playlist does not
+     * exist in the jamjot DB but exists on Spotify, it creates a new playlist
+     * entity in the jamjot DB and then updates the note.
+     * 
+     * @param userID     - ID of the user.
      * @param playlistID - Spotify ID of the playlist.
-     * @param note - The new note to be set for the playlist.
+     * @param note       - The new note to be set for the playlist.
      * @return Playlist - The updated playlist entity.
-     * @throws PlaylistNotFoundException - If the playlist does not exist or does not belong to the user.
-     * @throws UserNotFoundException - If the user does not exist in the jamjot DB.
+     * @throws PlaylistNotFoundException - If the playlist does not exist or does
+     *                                   not belong to the user.
+     * @throws UserNotFoundException     - If the user does not exist in the jamjot
+     *                                   DB.
      */
     public Playlist editPlaylistNote(String userID, String playlistID, String note)
             throws PlaylistNotFoundException, UserNotFoundException {
@@ -192,8 +191,10 @@ public class PlaylistAnnotationService {
     }
 
     /**
-     * This method creates a new playlist entity given information retreived from Spotify API.
-     * @param userID - ID of the user.
+     * This method creates a new playlist entity given information retreived from
+     * Spotify API.
+     * 
+     * @param userID     - ID of the user.
      * @param playlistID - Spotify ID of the playlist.
      * @return Playlist - The newly created playlist entity.
      * @throws UserNotFoundException - If the user does not exist in the jamjot DB.
@@ -210,27 +211,35 @@ public class PlaylistAnnotationService {
     }
 
     /**
-     * This method deletes the note for a specific playlist by resetting it to an empty string.
-     * @param userID - ID of the user.
+     * This method deletes the note for a specific playlist by resetting it to an
+     * empty string.
+     * 
+     * @param userID     - ID of the user.
      * @param playlistID - Spotify ID of the playlist.
      * @return Playlist - The updated playlist entity with the note deleted.
-     * @throws PlaylistNotFoundException - If the playlist does not exist or does not belong to the user.
-     * @throws UserNotFoundException - If the user does not exist in the jamjot DB.
+     * @throws PlaylistNotFoundException - If the playlist does not exist or does
+     *                                   not belong to the user.
+     * @throws UserNotFoundException     - If the user does not exist in the jamjot
+     *                                   DB.
      */
     public Playlist deletePlaylistNote(String userID, String playlistID)
             throws PlaylistNotFoundException, UserNotFoundException {
         return editPlaylistNote(userID, playlistID, "");
     }
 
-
-     /**
-     * This method creates and saves a new playlist entity in the jamjot DB if it does not exist.
-     * @param userID - ID of the authenticated user.
+    /**
+     * This method creates and saves a new playlist entity in the jamjot DB if it
+     * does not exist.
+     * 
+     * @param userID     - ID of the authenticated user.
      * @param playlistID - Spotify ID of the playlist.
-     * @throws PlaylistNotFoundException - If the playlist does not exist on Spotify or in the jamjot DB.
-     * @throws UserNotFoundException - If the user does not exist in the jamjot DB.
+     * @throws PlaylistNotFoundException - If the playlist does not exist on Spotify
+     *                                   or in the jamjot DB.
+     * @throws UserNotFoundException     - If the user does not exist in the jamjot
+     *                                   DB.
      */
-    protected void saveNewPlaylistEntity(String userID, String playlistID) throws PlaylistNotFoundException, UserNotFoundException {
+    protected void saveNewPlaylistEntity(String userID, String playlistID)
+            throws PlaylistNotFoundException, UserNotFoundException {
 
         if (playlistExistsOnSpotify(playlistID, userID)) {
             Playlist playlist = createNewPlaylistEntity(userID, playlistID);

@@ -55,9 +55,9 @@ public class TrackAnnotationService {
                 .uri(trackURL)
                 .retrieve()
                 .onStatus(status -> status.value() == 404,
-                    (req,res) ->{
-                        throw new TrackNotFoundException();
-                    })
+                        (req, res) -> {
+                            new RuntimeException(new TrackNotFoundException());
+                        })
                 .body(TrackInfo.class);
 
         if (spotifyTrackDTO == null) {
@@ -73,9 +73,8 @@ public class TrackAnnotationService {
      * 
      * @param playlistID - The Spotify ID of the playlist.
      * @return ArrayList<TrackDTO> - A list of track details.
-     * @throws PlaylistNotFoundException if the playlist does not exist on Spotify.
      */
-    public ArrayList<TrackDTO> getPlaylistTracksInfoFromSpotify(String playlistID) throws PlaylistNotFoundException{
+    public ArrayList<TrackDTO> getPlaylistTracksInfoFromSpotify(String playlistID) {
         ArrayList<TrackDTO> trackDTOs = new ArrayList<>();
         String next = SPOTIFY_BASE_URL + "/playlists/" + playlistID + "/tracks";
 
@@ -84,9 +83,9 @@ public class TrackAnnotationService {
                     .uri(next)
                     .retrieve()
                     .onStatus(status -> status.value() == 404,
-                    (req,res) ->{
-                        throw new PlaylistNotFoundException();
-                    })
+                            (req, res) -> {
+                                new RuntimeException(new PlaylistNotFoundException());
+                            })
                     .body(GetTracksResponse.class);
 
             if (response == null) {
@@ -202,15 +201,18 @@ public class TrackAnnotationService {
     /**
      * This method updates the note/annotation for a specific track in a user's
      * playlist.
-     * @param userID - ID of the authenticated user.
-     * @param playlistID - Spotify ID of the playlist.
-     * @param trackID - Spotify ID of the track.
+     * 
+     * @param userID      - ID of the authenticated user.
+     * @param playlistID  - Spotify ID of the playlist.
+     * @param trackID     - Spotify ID of the track.
      * @param trackNumber - The track number of the track in the playlist.
-     * @param note - The new note/annotation for the track.
+     * @param note        - The new note/annotation for the track.
      * @return PlaylistMember - The updated track entity.
-     * @throws PlaylistNotFoundException if the playlist does not exist in the jamjot DB
-     * @throws TrackNotFoundException if the track does not exist as a member in the playlist in the jamjot DB
-     * @throws UserNotFoundException if the user does not exist in the jamjot DB
+     * @throws PlaylistNotFoundException if the playlist does not exist in the
+     *                                   jamjot DB
+     * @throws TrackNotFoundException    if the track does not exist as a member in
+     *                                   the playlist in the jamjot DB
+     * @throws UserNotFoundException     if the user does not exist in the jamjot DB
      */
     public PlaylistMember editTrackNote(String userID, String playlistID, String trackID, Integer trackNumber,
             String note) throws PlaylistNotFoundException, TrackNotFoundException, UserNotFoundException {
@@ -222,24 +224,27 @@ public class TrackAnnotationService {
         } catch (PlaylistNotFoundException e) { // Playlist does not exist in jamjot DB
             playlistAnnotationService.saveNewPlaylistEntity(userID, playlistID);
         } catch (TrackNotFoundException e) { // Track does not exist in jamjot DB
-            saveNewPlaylistTrackEntity(userID, playlistID, trackID, trackNumber);            
+            saveNewPlaylistTrackEntity(userID, playlistID, trackID, trackNumber);
         }
 
         return editTrackNote(userID, playlistID, trackID, trackNumber, note);
 
     }
 
- 
-
     /**
-     * This method saves a new track entity in the jamjot DB and associates it with the given playlist and position in the playlist.
-     * @param userID - ID of the authenticated user.
-     * @param playlistID - Spotify ID of the playlist.
-     * @param trackID - Spotify ID of the track.
+     * This method saves a new track entity in the jamjot DB and associates it with
+     * the given playlist and position in the playlist.
+     * 
+     * @param userID      - ID of the authenticated user.
+     * @param playlistID  - Spotify ID of the playlist.
+     * @param trackID     - Spotify ID of the track.
      * @param trackNumber - The track number of the track in the playlist.
-     * @throws PlaylistNotFoundException - If the playlist does not exist on Spotify or in the jamjot DB.
-     * @throws TrackNotFoundException - If the track does not exist on Spotify or in the jamjot DB.
-     * @throws UserNotFoundException - If the user does not exist in the jamjot DB.
+     * @throws PlaylistNotFoundException - If the playlist does not exist on Spotify
+     *                                   or in the jamjot DB.
+     * @throws TrackNotFoundException    - If the track does not exist on Spotify or
+     *                                   in the jamjot DB.
+     * @throws UserNotFoundException     - If the user does not exist in the jamjot
+     *                                   DB.
      */
     private void saveNewPlaylistTrackEntity(String userID, String playlistID, String trackID,
             Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException, UserNotFoundException {
@@ -254,10 +259,12 @@ public class TrackAnnotationService {
     }
 
     /**
-     * This method creates and saves a new track entity in the jamjot DB. This track can be associated with one or more playlists.
+     * This method creates and saves a new track entity in the jamjot DB. This track
+     * can be associated with one or more playlists.
+     * 
      * @param trackID - Spotify ID of the track.
      * @return Track - The newly created track entity.
-     * */
+     */
     private Track saveNewTrackEntity(String trackID) {
         TrackInfo trackDTO = getTrackInfoFromSpotify(trackID);
         String trackName = trackDTO.name();
@@ -270,10 +277,13 @@ public class TrackAnnotationService {
     }
 
     /**
-     * This method creates and saves the relationship between a track and a playlist at a specific position.
-     * @param track - The track entity.
-     * @param playlist - The playlist entity.
-     * @param trackNumber - The position of the track in the playlist (track number).
+     * This method creates and saves the relationship between a track and a playlist
+     * at a specific position.
+     * 
+     * @param track       - The track entity.
+     * @param playlist    - The playlist entity.
+     * @param trackNumber - The position of the track in the playlist (track
+     *                    number).
      */
     private void saveTrackPlaylistRelationship(Track track, Playlist playlist, Integer trackNumber) {
         PlaylistMember trackInPlaylist = new PlaylistMember(track, playlist, trackNumber);
@@ -285,15 +295,21 @@ public class TrackAnnotationService {
     }
 
     /**
-     * This method deletes the note/annotation for a specific track in a user's playlist.
-     * @param userID - ID of the authenticated user.
-     * @param playlistID - Spotify ID of the playlist.
-     * @param trackID - Spotify ID of the track.
+     * This method deletes the note/annotation for a specific track in a user's
+     * playlist.
+     * 
+     * @param userID      - ID of the authenticated user.
+     * @param playlistID  - Spotify ID of the playlist.
+     * @param trackID     - Spotify ID of the track.
      * @param trackNumber - The track number of the track in the playlist.
-     * @return PlaylistMember - The updated playlist track entity with the note deleted.
-     * @throws PlaylistNotFoundException - If the playlist does not exist on Spotify or in the jamjot DB.
-     * @throws TrackNotFoundException - If the track does not exist on Spotify or in the jamjot DB.
-     * @throws UserNotFoundException - If the user does not exist in the jamjot DB.
+     * @return PlaylistMember - The updated playlist track entity with the note
+     *         deleted.
+     * @throws PlaylistNotFoundException - If the playlist does not exist on Spotify
+     *                                   or in the jamjot DB.
+     * @throws TrackNotFoundException    - If the track does not exist on Spotify or
+     *                                   in the jamjot DB.
+     * @throws UserNotFoundException     - If the user does not exist in the jamjot
+     *                                   DB.
      */
     public PlaylistMember deleteTrackNote(String userID, String playlistID, String trackID, Integer trackNumber)
             throws PlaylistNotFoundException, TrackNotFoundException, UserNotFoundException {
