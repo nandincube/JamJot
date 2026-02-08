@@ -1,5 +1,5 @@
 # JamJot
-Annotate songs in your Spotify playlist with personal notes.
+**Annotate songs in your Spotify playlist with personal notes**
 
 **Live API Demo (Swagger UI):**
 [Jamjot API Demo](https://jamjot.onrender.com)

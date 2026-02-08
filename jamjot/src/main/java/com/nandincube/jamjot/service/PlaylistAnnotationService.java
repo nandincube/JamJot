@@ -3,6 +3,8 @@ package com.nandincube.jamjot.service;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -12,10 +14,6 @@ import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.exceptions.UserNotFoundException;
 import com.nandincube.jamjot.model.Playlist;
 import com.nandincube.jamjot.model.User;
-import com.nandincube.jamjot.repository.PlaylistMemberRepository;
-import com.nandincube.jamjot.repository.PlaylistRepository;
-import com.nandincube.jamjot.repository.TimestampRepository;
-import com.nandincube.jamjot.repository.TrackRepository;
 import com.nandincube.jamjot.repository.UserRepository;
 
 @Service
@@ -41,7 +39,7 @@ public class PlaylistAnnotationService {
      * @return ArrayList<PlaylistDTO> - List of playlists and their details,
      *         including name and spotify ID.
      */
-    public ArrayList<PlaylistDTO> getPlaylistsFromSpotify() {
+    public ArrayList<PlaylistDTO> getPlaylistsInfoFromSpotify() {
         ArrayList<PlaylistDTO> playlistDTOs = new ArrayList<>();
         String next = SPOTIFY_BASE_URL + "/me/playlists";
         do {
@@ -70,15 +68,24 @@ public class PlaylistAnnotationService {
      * @param playlistID - The Spotify ID of the playlist.
      * @return PlaylistDTO - The details of the playlist.
      */
-    private PlaylistDTO getPlaylistFromSpotify(String playlistID) {
+    private PlaylistDTO getPlaylistInfoFromSpotify(String playlistID) throws PlaylistNotFoundException {
         String playlistURL = SPOTIFY_BASE_URL + "/playlists/" + playlistID;
 
         PlaylistDTO playlistDTO = restClient.get()
                 .uri(playlistURL)
                 .retrieve()
+                .onStatus(status -> status == HttpStatus.NOT_FOUND, (req, res) -> {
+                        resouceNotFound();
+                        }
+                            )
+
                 .body(PlaylistDTO.class);
 
         return playlistDTO;
+    }
+
+    private void resouceNotFound() throws PlaylistNotFoundException{
+        throw new PlaylistNotFoundException();
     }
 
     /**
@@ -90,7 +97,7 @@ public class PlaylistAnnotationService {
      *         otherwise.
      */
     protected boolean playlistExistsOnSpotify(String playlistID, String userID) {
-        PlaylistDTO playlist = getPlaylistFromSpotify(playlistID);
+        PlaylistDTO playlist = getPlaylistInfoFromSpotify(playlistID);
         if (playlist == null || !playlist.owner().id().equals(userID)) {
             return false;
         }
@@ -193,7 +200,7 @@ public class PlaylistAnnotationService {
      */
     private Playlist createNewPlaylistEntity(String userID, String playlistID) throws UserNotFoundException {
 
-        PlaylistDTO playlistDTO = getPlaylistFromSpotify(playlistID);
+        PlaylistDTO playlistDTO = getPlaylistInfoFromSpotify(playlistID);
 
         Optional<User> user = userRepository.findById(userID);
         if (!user.isPresent()) {

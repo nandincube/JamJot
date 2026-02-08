@@ -54,6 +54,10 @@ public class TrackAnnotationService {
         TrackInfo spotifyTrackDTO = restClient.get()
                 .uri(trackURL)
                 .retrieve()
+                .onStatus(status -> status.value() == 404,
+                    (req,res) ->{
+                        throw new TrackNotFoundException();
+                    })
                 .body(TrackInfo.class);
 
         if (spotifyTrackDTO == null) {
@@ -69,8 +73,9 @@ public class TrackAnnotationService {
      * 
      * @param playlistID - The Spotify ID of the playlist.
      * @return ArrayList<TrackDTO> - A list of track details.
+     * @throws PlaylistNotFoundException if the playlist does not exist on Spotify.
      */
-    public ArrayList<TrackDTO> getPlaylistTracksInfoFromSpotify(String playlistID) {
+    public ArrayList<TrackDTO> getPlaylistTracksInfoFromSpotify(String playlistID) throws PlaylistNotFoundException{
         ArrayList<TrackDTO> trackDTOs = new ArrayList<>();
         String next = SPOTIFY_BASE_URL + "/playlists/" + playlistID + "/tracks";
 
@@ -78,6 +83,10 @@ public class TrackAnnotationService {
             GetTracksResponse response = restClient.get()
                     .uri(next)
                     .retrieve()
+                    .onStatus(status -> status.value() == 404,
+                    (req,res) ->{
+                        throw new PlaylistNotFoundException();
+                    })
                     .body(GetTracksResponse.class);
 
             if (response == null) {
