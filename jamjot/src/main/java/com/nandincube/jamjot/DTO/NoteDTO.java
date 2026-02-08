@@ -2,6 +2,9 @@ package com.nandincube.jamjot.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * DTO for encapsulating the note content associated with a playlist or track.
+ */
 public class NoteDTO {
     
     @Schema(example = "This is a sample note.", description = "The note content associated with a playlist or track")

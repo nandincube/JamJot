@@ -2,6 +2,9 @@ package com.nandincube.jamjot.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * DTO for encapsulating the details of a timestamp annotation, including its ID, start time, end time, and associated note.
+ */
 public record TimestampDTO(
     @Schema(example="1", description = "The unique ID of the timestamp")
     Long id,
