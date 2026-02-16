@@ -49,7 +49,7 @@ public class PlaylistService {
     }
 
     
-    public Optional<Playlist> findById(String id){
-        return playlistRepository.findById(id);
+    public Optional<Playlist> findByPlaylistIdandUserId(String playlistID, String userID){
+        return playlistRepository.findByPlaylistIDAndUser_UserID(playlistID, userID);
     }
 }

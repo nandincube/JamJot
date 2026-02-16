@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 public class Timestamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long timestampID;
 
     @NonNull
     @Column(name = "start_time")
@@ -52,7 +52,7 @@ public class Timestamp {
     }
 
     public Long getId() {
-        return id;
+        return timestampID;
     }
 
     public Duration getStart() {

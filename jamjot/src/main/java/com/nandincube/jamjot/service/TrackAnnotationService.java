@@ -116,7 +116,7 @@ public class TrackAnnotationService {
      * @param trackNumber - The track number of the track in the playlist.
      * @return
      */
-    private boolean playlistTrackExistsOnSpotify(String playlistID, String userID, String trackID,
+    protected boolean playlistTrackExistsOnSpotify(String playlistID, String userID, String trackID,
             Integer trackNumber) {
         ArrayList<TrackDTO> tracks = getPlaylistTracksInfoFromSpotify(playlistID);
 
@@ -139,7 +139,8 @@ public class TrackAnnotationService {
      * @throws TrackNotFoundException    if the track (at the given position) does
      *                                   not exist in the playlist in the database.
      */
-    private PlaylistMember getPlaylistTrackFromDB(String userID, String playlistID, String trackID, Integer trackNumber)
+    protected PlaylistMember getPlaylistTrackFromDB(String userID, String playlistID, String trackID,
+            Integer trackNumber)
             throws PlaylistNotFoundException, TrackNotFoundException {
 
         if (!playlistAnnotationService.playlistExistsInDB(userID, playlistID)) {
@@ -147,13 +148,10 @@ public class TrackAnnotationService {
         }
 
         PlaylistMemberID playlistTrackID = new PlaylistMemberID(trackID, playlistID, trackNumber);
-        Optional<PlaylistMember> trackInPlaylist = playlistMemberService.findById(playlistTrackID);
+        PlaylistMember trackInPlaylist = playlistMemberService.findById(playlistTrackID)
+                .orElseThrow(TrackNotFoundException::new);
 
-        if (trackInPlaylist.isEmpty()) {
-            throw new TrackNotFoundException();
-        }
-
-        return trackInPlaylist.get();
+        return trackInPlaylist;
     }
 
     /**
@@ -246,7 +244,7 @@ public class TrackAnnotationService {
      * @throws UserNotFoundException     - If the user does not exist in the jamjot
      *                                   DB.
      */
-    private void saveNewPlaylistTrackEntity(String userID, String playlistID, String trackID,
+    protected void saveNewPlaylistTrackEntity(String userID, String playlistID, String trackID,
             Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException, UserNotFoundException {
 
         if (playlistTrackExistsOnSpotify(playlistID, userID, trackID, trackNumber)) {

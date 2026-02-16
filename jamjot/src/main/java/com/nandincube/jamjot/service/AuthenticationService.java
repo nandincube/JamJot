@@ -36,12 +36,7 @@ public class AuthenticationService {
             newUser.setDisplayName(displayName);
             userRepository.save(newUser);
         }
+
         return "SUCCESS";
-    }
-
-
-    public String signup() {
-
-        return null;
     }
 }

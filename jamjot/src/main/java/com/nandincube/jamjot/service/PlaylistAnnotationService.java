@@ -106,19 +106,11 @@ public class PlaylistAnnotationService {
      *                                   not belong to the user.
      */
     protected Playlist getPlaylistFromDB(String userID, String playlistID) throws PlaylistNotFoundException {
-        Optional<Playlist> playlistOptional = playlistService.findById(playlistID);
+        Playlist playlist = playlistService.findByPlaylistIdandUserId(playlistID, userID)
+            .orElseThrow(PlaylistNotFoundException::new);
 
-        if (playlistOptional.isEmpty()) {
-            throw new PlaylistNotFoundException();
-        }
+        return playlist;
 
-        Playlist playlist = playlistOptional.get();
-        String playlistOwnerID = playlist.getUser().getUserID();
-
-        if (!userID.equals(playlistOwnerID)) {
-            throw new PlaylistNotFoundException();
-        }
-        return playlistOptional.get();
     }
 
     /**
@@ -202,12 +194,9 @@ public class PlaylistAnnotationService {
     private Playlist createNewPlaylistEntity(String userID, String playlistID) throws UserNotFoundException {
 
         PlaylistDTO playlistDTO = getPlaylistInfoFromSpotify(playlistID);
-
-        Optional<User> user = userRepository.findById(userID);
-        if (!user.isPresent()) {
-            throw new UserNotFoundException();
-        }
-        return new Playlist(playlistID, playlistDTO.name(), user.get());
+        User user = userRepository.findById(userID).orElseThrow(UserNotFoundException::new);
+      
+        return new Playlist(playlistID, playlistDTO.name(), user);
     }
 
     /**

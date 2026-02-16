@@ -23,9 +23,11 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
+import com.nandincube.jamjot.exceptions.TimestampNotFoundException;
 import com.nandincube.jamjot.exceptions.TrackNotFoundException;
 import com.nandincube.jamjot.exceptions.UserNotFoundException;
 import com.nandincube.jamjot.service.PlaylistAnnotationService;
+import com.nandincube.jamjot.service.TimestampAnnotationService;
 import com.nandincube.jamjot.service.TrackAnnotationService;
 import com.nandincube.jamjot.dto.GenericResponse;
 import com.nandincube.jamjot.dto.NoteDTO;
@@ -39,9 +41,12 @@ public class AnnotationsController {
 
         private final PlaylistAnnotationService playlistAnnotationService;
         private final TrackAnnotationService trackAnnotationService;
+        private final TimestampAnnotationService timestampAnnotationService;
 
         public AnnotationsController(PlaylistAnnotationService playlistAnnotationService,
-                        TrackAnnotationService trackAnnotationService) {
+                        TrackAnnotationService trackAnnotationService,
+                        TimestampAnnotationService timestampAnnotationService) {
+                this.timestampAnnotationService = timestampAnnotationService;
                 this.playlistAnnotationService = playlistAnnotationService;
                 this.trackAnnotationService = trackAnnotationService;
         }
@@ -226,7 +231,9 @@ public class AnnotationsController {
         }
 
         /**
-         * This method retrieves all tracks in a specific playlist from Spotify using the playlist ID.
+         * This method retrieves all tracks in a specific playlist from Spotify using
+         * the playlist ID.
+         * 
          * @param playlistID - Spotify ID of the playlist.
          * @return
          */
@@ -431,6 +438,38 @@ public class AnnotationsController {
                 }
         }
 
+        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
+        @Operation(summary = "Update Track Note", description = "Update the note for a timestamp interval in a specific track that appears in a playlist")
+        @PutMapping("/playlists/{playlistID}/track/{trackID}/timestamp/{timestampID}/note")
+        public ResponseEntity<GenericResponse> updateTimestampNote(Authentication userToken,
+                        @Parameter(description = "The Spotify ID for the specified playlist", required = true) @PathVariable String playlistID,
+                        @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
+                        @Parameter(description = "The track number in playlist", required = true) @RequestParam(required = true) Integer trackNumber,
+                        @Parameter(description = "The timestamp ID for the specified timestamp", required = true) @PathVariable Long timestampID,
+                        @RequestBody NoteDTO note) {
+
+                String userID = userToken.getName();
+
+                try {
+                        timestampAnnotationService.updateTimestampNote(userID, playlistID, trackID,
+                                        trackNumber, note.getNote(),
+                                        timestampID);
+                        return ResponseEntity.ok(new GenericResponse("Timestamp note updated!"));
+                } catch (PlaylistNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (TrackNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (UserNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (TimestampNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                }
+        }
+
         // @Tag(name = "Edit", description = "Endpoints for adding or updating playlist
         // and track notes")
         // @Operation(summary = "Edit Timestamp Note", description = "Edit the note for
@@ -482,23 +521,24 @@ public class AnnotationsController {
 
         // @Tag(name = "Edit", description = "Endpoints for adding or updating playlist
         // and track notes")
-        // @Operation(summary = "Add Timestamp Note", description = "Add the note for a
-        // specific timestamp in a track")
-        // @ApiResponses(value = {
-        // @ApiResponse(responseCode = "404", description = "User, track or playlist not
-        // found", content = {
-        // @Content(mediaType = "*/*", schema = @Schema(example = "Error: Could not find
-        // playlist!")) }),
-        // @ApiResponse(responseCode = "400", description = "Start/End time format is
-        // invalid or start and end time interval is invalid", content = {
-        // @Content(mediaType = "*/*", schema = @Schema(example = "Start time must be in
-        // the format mm:ss")) }),
+        // @Operation(summary = "Add Timestamp Note",description="Add the note for
+        // aspecific timestampin a track")
+        // @ApiResponses(value =
+        // {@ApiResponse(responseCode="404",description="User, track or playlist
+        // notfound",content={@Content(mediaType="*/*",schema=@Schema(example="Error:
+        // Could not
+        // findplaylist!"))}),@ApiResponse(responseCode="400",description="Start/End
+        // time format isinvalid orstart and
+        // end time
+        // interval is invalid", content =
+        // {@Content(mediaType="*/*",schema=@Schema(example="Start time must be inthe
+        // format mm:ss"))
+        // }),
 
-        // @ApiResponse(responseCode = "200", description = "Timestamp note updated
-        // successfully", content = {
-        // @Content(mediaType = "*/*", schema = @Schema(example = "Timestamp Note
-        // Updated!"))
-        // }) })
+        // @ApiResponse(responseCode="200",description="Timestamp note
+        // updatedsuccessfully",content={@Content(mediaType="*/*",schema=@Schema(example="Timestamp
+        // NoteUpdated!"))})})
+
         // @PostMapping("/playlists/{playlistID}/tracks/{trackID}/timestamps/note")
         // public ResponseEntity<String> addTimestampNote(Authentication userToken,
         // @Parameter(description = "The Spotify ID for specified playlist", required =
