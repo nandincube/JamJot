@@ -59,7 +59,11 @@ public class TimestampService {
         return errors.toString();
     }
 
-    public Optional<Timestamp> findByTimestampIdAndPlaylistMemberId(Long timestampID, PlaylistMemberID playlistMemberID) {
-        return timestampRepository.findByTimestampIDAndPlaylistMember_PlaylistMemberID(timestampID, playlistMemberID);
+    public Optional<Timestamp> findByTimestampIDAndUserID(Long timestampID, String userID) {
+        return timestampRepository.findByTimestampIDAndUser_UserID(timestampID, userID);
+    }
+
+    public Optional<Timestamp> findByTimestampID(Long id) {
+        return timestampRepository.findById(id);
     }
 }

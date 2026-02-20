@@ -25,7 +25,7 @@ public class TimestampAnnotationService {
 
     }
 
-    public Timestamp updateTimestampNote2(String userID, String playlistID, String trackID, Integer trackNumber,
+    public Timestamp addTimestampNote(String userID, String playlistID, String trackID, Integer trackNumber,
             String note, Long timestampID) throws PlaylistNotFoundException, TrackNotFoundException,
             UserNotFoundException, TimestampNotFoundException {
 
@@ -34,7 +34,7 @@ public class TimestampAnnotationService {
                     trackNumber);
 
             Timestamp timestamp = timestampService
-                    .findByIdAndPlaylistMemberId(timestampID, trackInPlaylist.getPlaylistMemberID())
+                    .findByTimestampIDAndPlaylistMemberId(timestampID, trackInPlaylist.getPlaylistMemberID())
                     .orElseThrow(TimestampNotFoundException::new);
 
             timestamp.setNote(note);
@@ -46,59 +46,26 @@ public class TimestampAnnotationService {
             trackAnnotationService.saveNewPlaylistTrackEntity(userID, playlistID, trackID, trackNumber);
         }
 
-        return updateTimestampNote(userID, playlistID, trackID, trackNumber, note, timestampID);
+        return addTimestampNote(userID, playlistID, trackID, trackNumber, note, timestampID);
 
     }
-
 
     /**
-     * Update an existing timestamp note for a track in a playlist. If the playlist or track does not exist in the database, they will be created with empty notes and then the timestamp note will be added. For ease of use, timestamp notes are retrieved by timestamp ID, as opposed to interval start and end time.
-     * @param userID
-     * @param playlistID
-     * @param trackID
-     * @param trackNumber
-     * @param note 
-     * @param timestampID - the ID of the timestamp note to update
-     * @return Timestamp - The updated timestamp entity.
-     * @throws PlaylistNotFoundException
-     * @throws TrackNotFoundException
-     * @throws UserNotFoundException
-     * @throws TimestampNotFoundException
+     * Update an existing timestamp note for a track in a playlist. For ease of use, timestamp
+     * notes are retrieved by timestamp ID, as opposed to interval start and end
+     * time.
+     * 
      */
-    public Timestamp updateTimestampNote(String userID, String playlistID, String trackID, Integer trackNumber,
-            String note, Long timestampID) throws PlaylistNotFoundException, TrackNotFoundException,
-            UserNotFoundException, TimestampNotFoundException {
+    public Timestamp updateTimestampNote(String userID, Long timestampID,
+            String note) throws TimestampNotFoundException {
 
-        try {
-            PlaylistMember trackInPlaylist = trackAnnotationService.getPlaylistTrackFromDB(userID, playlistID, trackID,
-                    trackNumber); 
-
-            Timestamp timestamp = timestampService
-                    .findByTimestampIDAndPlaylistMemberID(timestampID, trackInPlaylist.getPlaylistMemberID())
-                    .orElseThrow(TimestampNotFoundException::new); //there is no timestamp note for the provided track and playlist
-
-            timestamp.setNote(note);
-            return timestampService.save(timestamp);
-
-        } catch (PlaylistNotFoundException e) {
-            if (playlistAnnotationService.playlistExistsOnSpotify(playlistID, userID)) { //playlist exists but has no existing notes to edit
-                throw new TimestampNotFoundException();
-            } else {
-                throw new PlaylistNotFoundException();
-            }
-        } catch (TrackNotFoundException e) {
-             if (trackAnnotationService.playlistTrackExistsOnSpotify(playlistID, userID, trackID, trackNumber)) { //track exists but has no existing timestamp notes to edit
-                throw new TimestampNotFoundException();
-            } else {
-                throw new TrackNotFoundException();
-            }
-        }
+        Timestamp timestamp = timestampService.findByTimestampIDAndUserID(timestampID, userID)
+                .orElseThrow(TimestampNotFoundException::new); // the timestamp with provided ID does not exist in the
+                                                               // DB or does not belong to the user
+        timestamp.setNote(note);
+        return timestampService.save(timestamp);
     }
 
-
-
-
- 
 }
 
 // /**

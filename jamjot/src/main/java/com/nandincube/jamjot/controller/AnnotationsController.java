@@ -440,35 +440,30 @@ public class AnnotationsController {
 
         @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
         @Operation(summary = "Update Track Note", description = "Update the note for a timestamp interval in a specific track that appears in a playlist")
-        @PutMapping("/playlists/{playlistID}/track/{trackID}/timestamp/{timestampID}/note")
+
+
+        
+        @PutMapping("/playlists/timestamp/{timestampID}/note")
         public ResponseEntity<GenericResponse> updateTimestampNote(Authentication userToken,
-                        @Parameter(description = "The Spotify ID for the specified playlist", required = true) @PathVariable String playlistID,
-                        @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
-                        @Parameter(description = "The track number in playlist", required = true) @RequestParam(required = true) Integer trackNumber,
                         @Parameter(description = "The timestamp ID for the specified timestamp", required = true) @PathVariable Long timestampID,
                         @RequestBody NoteDTO note) {
 
                 String userID = userToken.getName();
 
                 try {
-                        timestampAnnotationService.updateTimestampNote(userID, playlistID, trackID,
-                                        trackNumber, note.getNote(),
-                                        timestampID);
+                        timestampAnnotationService.updateTimestampNote(userID, timestampID,
+                                        note.getNote());
                         return ResponseEntity.ok(new GenericResponse("Timestamp note updated!"));
-                } catch (PlaylistNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(new GenericResponse(e.getMessage()));
-                } catch (TrackNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(new GenericResponse(e.getMessage()));
-                } catch (UserNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(new GenericResponse(e.getMessage()));
                 } catch (TimestampNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
                 }
         }
+
+
+
+
+
 
         // @Tag(name = "Edit", description = "Endpoints for adding or updating playlist
         // and track notes")

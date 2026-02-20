@@ -12,7 +12,6 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToMany;
 
 @Entity
-//@Table(name="playlist_member")
 public class PlaylistMember {
 
     @EmbeddedId
