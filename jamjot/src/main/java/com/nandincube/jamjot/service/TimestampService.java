@@ -1,11 +1,11 @@
 package com.nandincube.jamjot.service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
-import com.nandincube.jamjot.model.PlaylistMemberID;
 import com.nandincube.jamjot.model.Timestamp;
 import com.nandincube.jamjot.repository.TimestampRepository;
 
@@ -60,10 +60,18 @@ public class TimestampService {
     }
 
     public Optional<Timestamp> findByTimestampIDAndUserID(Long timestampID, String userID) {
-        return timestampRepository.findByTimestampIDAndUser_UserID(timestampID, userID);
+        return timestampRepository.findByTimestampIDAndUserID(timestampID, userID);
     }
 
     public Optional<Timestamp> findByTimestampID(Long id) {
         return timestampRepository.findById(id);
+    }
+
+    public void delete(Timestamp timestamp) {
+        timestampRepository.delete(timestamp);
+    }
+
+    public ArrayList<Timestamp> findByPlaylistMemberID(String userID, String playlistID, String trackID, int trackNumber) {
+        return timestampRepository.findByPlaylistMemberID(userID, playlistID, trackID, trackNumber);
     }
 }

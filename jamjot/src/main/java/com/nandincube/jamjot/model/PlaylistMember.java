@@ -1,17 +1,15 @@
 package com.nandincube.jamjot.model;
 
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
-@Entity
+@Entity(name="playlist_member")
+@Table(name="playlist_member")
 public class PlaylistMember {
 
     @EmbeddedId
@@ -29,9 +27,6 @@ public class PlaylistMember {
 
     @Column(length=400)
     private String note;
-
-    @OneToMany(mappedBy = "playlistMember", cascade = CascadeType.ALL)
-    private List<Timestamp> timestamps;
 
     public PlaylistMember(Track track, Playlist playlist, int trackNumber){
         this.playlist = playlist;
@@ -74,13 +69,4 @@ public class PlaylistMember {
     public void setNote(String note) {
         this.note = note;
     }
-
-    public List<Timestamp> getTimestamps() {
-        return timestamps;
-    }
-
-    public void setTimestamps(List<Timestamp> timestamps) {
-        this.timestamps = timestamps;
-    }
-
 }

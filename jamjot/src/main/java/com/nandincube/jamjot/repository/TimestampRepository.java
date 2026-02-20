@@ -1,6 +1,7 @@
 package com.nandincube.jamjot.repository;
 
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +16,23 @@ public interface TimestampRepository extends JpaRepository<Timestamp, Long> {
     @Query
     ("""
             SELECT t 
-            FROM Timestamp t JOIN Playlist p ON t.playlist_id = p.playlist_id
-            WHERE t.timestamp_id = ?1 AND p.user_id = ?2
+            FROM Timestamp t 
+            JOIN t.playlistMember pm
+            JOIN pm.playlist p
+            WHERE t.timestampID = ?1 AND p.user.userID = ?2
             """)
-    Optional<Timestamp> findByTimestampIDAndUserID(Long timestampID, String userID);
+    Optional<Timestamp> findByTimestampIDAndUserID(Long timestampID, String userID); 
+
+    @Query(
+        """          
+                SELECT t
+                FROM Timestamp t
+                WHERE t.playlistMember.playlist.playlistID = ?2
+                AND t.playlistMember.playlist.user.userID = ?1
+                AND t.playlistMember.track.trackID = ?3
+                AND t.playlistMember.trackNumber = ?4
+    """
+    )
+    ArrayList<Timestamp> findByPlaylistMemberID(String userID, String playlistID, String trackID, int trackNumber);
+        
+}

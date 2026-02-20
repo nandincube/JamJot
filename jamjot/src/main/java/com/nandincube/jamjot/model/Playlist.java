@@ -15,7 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 
-@Entity
+@Entity(name="playlist")
 @Table(name="playlist")
 public class Playlist {
     @Id
@@ -29,11 +29,11 @@ public class Playlist {
     private String note;
 
     @NonNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
 
-    @OneToMany(mappedBy = "playlist")
+    @OneToMany(mappedBy = "playlist", cascade = CascadeType.ALL)
     private List<PlaylistMember> tracks;
 
     public Playlist(String playlistID, String name, User user){

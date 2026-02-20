@@ -8,15 +8,12 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.nandincube.jamjot.model.User;
-import com.nandincube.jamjot.repository.UserRepository;
-
 @Service
 public class AuthenticationService {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public AuthenticationService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-
+    public AuthenticationService(UserService userService) {
+        this.userService = userService;
     }
 
     public String createUserIfNotExists(Authentication userToken) {
@@ -29,12 +26,12 @@ public class AuthenticationService {
             return "ID is null or empty";
         }
 
-        Optional<User> user = userRepository.findById(id);
+        Optional<User> user = userService.findById(id);
         if(!user.isPresent()) {
             User newUser = new User();
             newUser.setUserID(id);
             newUser.setDisplayName(displayName);
-            userRepository.save(newUser);
+            userService.save(newUser);
         }
 
         return "SUCCESS";

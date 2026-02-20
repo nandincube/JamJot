@@ -1,7 +1,7 @@
 package com.nandincube.jamjot.service;
 
+import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -94,7 +94,7 @@ public class TrackAnnotationService {
 
             for (int i = 0; i < response.items().size(); i++) {
                 SpotifyTrackDTO apiTrackDTO = response.items().get(i);
-                TrackDTO jamjotTrackDTO = new TrackDTO(apiTrackDTO, i + 1);
+                TrackDTO jamjotTrackDTO = new TrackDTO(i+1, apiTrackDTO);
                 trackDTOs.add(jamjotTrackDTO);
             }
 
@@ -270,7 +270,7 @@ public class TrackAnnotationService {
                 .map(artist -> artist.name())
                 .collect(Collectors.joining(", "));
 
-        Track newTrack = new Track(trackID, trackName, artists);
+        Track newTrack = new Track(trackID, trackName, artists, Duration.ofMillis(trackDTO.duration_ms()));
         return trackService.save(newTrack);
     }
 

@@ -1,5 +1,6 @@
 package com.nandincube.jamjot.service;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -56,4 +57,9 @@ public class TrackService {
 
         return errors.toString();
     }
+
+    public Optional<Track> findById(String trackID)  {
+        return trackRepository.findById(trackID);
+    }
+    
 }

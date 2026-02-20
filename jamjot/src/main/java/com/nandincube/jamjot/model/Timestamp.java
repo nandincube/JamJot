@@ -11,10 +11,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-@Entity
+@Entity(name="timestamp")
 @Table(name="timestamp")
 public class Timestamp {
     @Id
@@ -43,17 +42,11 @@ public class Timestamp {
     })
     private PlaylistMember playlistMember; //timestamp belongs to a specific track in a specific playlist
 
-
-    @OneToOne
-    @JoinColumn(name="user_id")
-    private User user; //timestamp creator
-
-    public Timestamp(Duration start, Duration end, String note, PlaylistMember playlistMember, User user ){ 
+    public Timestamp(Duration start, Duration end, String note, PlaylistMember playlistMember){ 
         this.start = start;
         this.end = end;
         this.note = note;
         this.playlistMember = playlistMember;
-        this.user = user;
     }
 
     public Timestamp() {
@@ -95,11 +88,5 @@ public class Timestamp {
         this.playlistMember = playlistMember;
     }
 
-    public User getUser(){
-        return user;
-    }
-
-    public void setUser(User user){
-        this.user = user;
-    }
+    
 }

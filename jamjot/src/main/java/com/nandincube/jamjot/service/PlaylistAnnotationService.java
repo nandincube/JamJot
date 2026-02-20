@@ -13,22 +13,22 @@ import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.exceptions.UserNotFoundException;
 import com.nandincube.jamjot.model.Playlist;
 import com.nandincube.jamjot.model.User;
-import com.nandincube.jamjot.repository.UserRepository;
+import com.nandincube.jamjot.service.UserService;
 
 @Service
 public class PlaylistAnnotationService {
     private final PlaylistService playlistService;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final RestClient restClient;
 
     private static final String SPOTIFY_BASE_URL = "https://api.spotify.com/v1";
 
     public PlaylistAnnotationService(PlaylistService playlistService,
-            UserRepository userRepository,
+            UserService userService,
             RestClient restClient) {
         this.playlistService = playlistService;
+        this.userService = userService;
         this.restClient = restClient;
-        this.userRepository = userRepository;
     }
 
     /**
@@ -194,7 +194,7 @@ public class PlaylistAnnotationService {
     private Playlist createNewPlaylistEntity(String userID, String playlistID) throws UserNotFoundException {
 
         PlaylistDTO playlistDTO = getPlaylistInfoFromSpotify(playlistID);
-        User user = userRepository.findById(userID).orElseThrow(UserNotFoundException::new);
+        User user = userService.findById(userID).orElseThrow(UserNotFoundException::new);
       
         return new Playlist(playlistID, playlistDTO.name(), user);
     }

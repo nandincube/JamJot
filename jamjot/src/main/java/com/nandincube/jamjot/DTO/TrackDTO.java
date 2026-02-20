@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
  * Track number is included to account for the fact that the same track can appear multiple times in a playlist, where each each iteration in future may have a different note associated with it.
  */
 public record TrackDTO(
-    @Schema(description = "Information about the track")
-    SpotifyTrackDTO entry,
     @Schema(example="14", description = "The track number in the playlist")
-    Integer track_number
+    Integer track_number,
+    @Schema(description = "Information about the track")
+    SpotifyTrackDTO entry
 ) {}
 
 
