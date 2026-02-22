@@ -121,7 +121,7 @@ public class TrackAnnotationService {
         ArrayList<TrackDTO> tracks = getPlaylistTracksInfoFromSpotify(playlistID);
 
         Boolean exists = tracks.stream().anyMatch(
-                (t) -> t.entry().item().id().equals(trackID) && t.track_number() == trackNumber);
+                (t) -> t.entry().item().getId().equals(trackID) && t.track_number() == trackNumber);
         return exists;
     }
 
@@ -265,12 +265,12 @@ public class TrackAnnotationService {
      */
     private Track saveNewTrackEntity(String trackID) {
         TrackInfo trackDTO = getTrackInfoFromSpotify(trackID);
-        String trackName = trackDTO.name();
-        String artists = trackDTO.artists().stream()
+        String trackName = trackDTO.getName();
+        String artists = trackDTO.getArtists().stream()
                 .map(artist -> artist.name())
                 .collect(Collectors.joining(", "));
 
-        Track newTrack = new Track(trackID, trackName, artists, Duration.ofMillis(trackDTO.duration_ms()));
+        Track newTrack = new Track(trackID, trackName, artists, Duration.ofMillis(trackDTO.getDuration_ms()));
         return trackService.save(newTrack);
     }
 

@@ -46,3 +46,5 @@ logging:
 springdoc:
   swagger-ui:
     tags-sorter: alpha
+    page-title: Jamjot API Docs
+

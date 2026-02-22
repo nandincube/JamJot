@@ -219,8 +219,8 @@ public class TimestampAnnotationService {
     private TimestampNoteResponseDTO createTimestampDTO(Timestamp timestamp) {
         return new TimestampNoteResponseDTO(
                 timestamp.getId(),
-                String.format("%d:%02d", timestamp.getStart().toMinutes(), timestamp.getStart().toSeconds()),
-                String.format("%d:%02d", timestamp.getEnd().toMinutes(), timestamp.getEnd().toSeconds()),
+                String.format("%02d:%02d", timestamp.getStart().toMinutes(), timestamp.getStart().toSecondsPart()),
+                String.format("%02d:%02d", timestamp.getEnd().toMinutes(), timestamp.getEnd().toSecondsPart()),
                 timestamp.getNote());
     }
 

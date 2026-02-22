@@ -30,7 +30,7 @@ import com.nandincube.jamjot.dto.PlaylistDTO;
 
 @RestController
 @RequestMapping("/annotations/playlists")
-@Tag(name = "Annotations API", description = "Endpoints for managing playlist and track annotations")
+@Tag(name = "Playlist Annotations", description = "Endpoints for managing playlist-level annotations")
 public class PlaylistAnnotationsController {
 
         private final PlaylistAnnotationService playlistAnnotationService;
@@ -46,7 +46,6 @@ public class PlaylistAnnotationsController {
          * @return ResponseEntity<ArrayList<PlaylistDTO>> - List of playlists and their
          *         details, including name, description and spotify ID.
          */
-        @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
         @Operation(summary = "Get Playlists", description = "Retrieve all playlists made by the authenticated user from Spotify")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Playlists retrieved successfully", content = {
@@ -75,7 +74,6 @@ public class PlaylistAnnotationsController {
          * @return ResponseEntity<GenericResponse> - Note associated with the playlist
          *         or error message if playlist is not found.
          */
-        @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
         @Operation(summary = "Get Playlist Note", description = "Retrieve the note for a specific playlist")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "Playlist not found", content = {
@@ -104,7 +102,7 @@ public class PlaylistAnnotationsController {
                         if (e.getCause() instanceof PlaylistNotFoundException ex) { // if playlist is not found - i.e.
                                                                                     // playlist ID invalid
                                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                                .body(new GenericResponse(ex.getMessage()));
+                                                .body(new GenericResponse(e.getMessage()));
                         }
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
@@ -123,7 +121,6 @@ public class PlaylistAnnotationsController {
          * @return ResponseEntity<GenericResponse> - Confirmation message upon
          *         successful update or error message if playlist is not found.
          */
-        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
         @Operation(summary = "Edit Playlist Note", description = "Add or Update the note for a specific playlist ")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User or playlist not found", content = {
@@ -155,7 +152,7 @@ public class PlaylistAnnotationsController {
                 } catch (RuntimeException e) {
                         if (e.getCause() instanceof PlaylistNotFoundException ex) { // if playlist is not found
                                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                                .body(new GenericResponse(ex.getMessage()));
+                                                .body(new GenericResponse(e.getMessage()));
                         }
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
@@ -174,7 +171,6 @@ public class PlaylistAnnotationsController {
          *         successful or error message if playlist or user not found.
          *         deletion.
          */
-        @Tag(name = "Delete", description = "Endpoints for deleting playlist and track notes")
         @Operation(summary = "Delete Playlist Note", description = "Delete the note for a specific playlist")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User or playlist not found", content = {
@@ -208,7 +204,7 @@ public class PlaylistAnnotationsController {
                         if (e.getCause() instanceof PlaylistNotFoundException ex) { // if playlist is not found - i.e.
                                                                                     // playlist ID invalid
                                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                                .body(new GenericResponse(ex.getMessage()));
+                                                .body(new GenericResponse(e.getMessage()));
                         }
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 

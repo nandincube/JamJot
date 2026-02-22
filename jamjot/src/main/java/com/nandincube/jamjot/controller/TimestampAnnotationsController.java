@@ -35,7 +35,7 @@ import com.nandincube.jamjot.dto.TimestampNoteRequestDTO;
 
 @RestController
 @RequestMapping("/annotations/timestamps")
-@Tag(name = "Annotations API", description = "Endpoints for managing playlist and track annotations")
+@Tag(name = "Timestamp Annotations", description = "Endpoints for managing timestamp-level annotations for tracks in playlists")
 public class TimestampAnnotationsController {
 
         private final TimestampAnnotationService timestampAnnotationService;
@@ -44,7 +44,6 @@ public class TimestampAnnotationsController {
                 this.timestampAnnotationService = timestampAnnotationService;
         }
 
-        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
         @Operation(summary = "Update Timestamp Note", description = "Update the note for a timestamp interval in a specific track that appears in a playlist")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "Timestamp not found", content = {
@@ -78,7 +77,6 @@ public class TimestampAnnotationsController {
                 }
         }
 
-        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
         @Operation(summary = "Add Timestamp Note", description = "Add a note for a timestamp interval in a specific track that appears in a playlist")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
@@ -127,7 +125,6 @@ public class TimestampAnnotationsController {
                 }
         }
 
-        @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
         @Operation(summary = "Get Timestamp Notes", description = "Retrieve the timestamp notes for a specific track in a playlist")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
@@ -176,7 +173,6 @@ public class TimestampAnnotationsController {
                 }
         }
 
-        @Tag(name = "Delete", description = "Endpoints for deleting playlist and track notes")
         @Operation(summary = "Delete Timestamp Note", description = "Delete the timestampnote for a specific track in a playlist")
         @ApiResponses(value = {
                          @ApiResponse(responseCode = "404", description = "Timestamp not found", content = {

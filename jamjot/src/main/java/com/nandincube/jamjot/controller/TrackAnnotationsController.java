@@ -32,7 +32,7 @@ import com.nandincube.jamjot.dto.TrackDTO;
 
 @RestController
 @RequestMapping("/annotations")
-@Tag(name = "Annotations API", description = "Endpoints for managing playlist and track annotations")
+@Tag(name = "Track Annotations", description = "Endpoints for managing track-level annotations")
 public class TrackAnnotationsController {
 
         private final TrackAnnotationService trackAnnotationService;
@@ -49,7 +49,6 @@ public class TrackAnnotationsController {
          * @param playlistID - Spotify ID of the playlist.
          * @return
          */
-        @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
         @Operation(summary = "Get Tracks in Playlist", description = "Retrieve all tracks in a specific playlist from Spotify")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "Tracks retrieved successfully", content = {
@@ -91,7 +90,6 @@ public class TrackAnnotationsController {
          * @param trackNumber
          * @return
          */
-        @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
         @Operation(summary = "Get Track Note", description = "Retrieve the note for a specific track in a playlist")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "Track or playlist not found", content = {
@@ -148,7 +146,6 @@ public class TrackAnnotationsController {
          * @param note
          * @return
          */
-        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
         @Operation(summary = "Edit Track Note", description = "Add or Update the note for a specific track in a playlist")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
@@ -164,7 +161,7 @@ public class TrackAnnotationsController {
                         }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") }) })
-        @PutMapping("/playlists/{playlistID}/track/{trackID}/note")
+        @PutMapping("/playlists/{playlistID}/tracks/{trackID}/note")
         public ResponseEntity<GenericResponse> editTrackNote(Authentication userToken,
                         @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
                         @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
@@ -212,7 +209,6 @@ public class TrackAnnotationsController {
          * @param trackNumber
          * @return
          */
-        @Tag(name = "Delete", description = "Endpoints for deleting playlist and track notes")
         @Operation(summary = "Delete Track Note", description = "Delete the note for a specific track in a playlist")
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
@@ -226,7 +222,7 @@ public class TrackAnnotationsController {
                         }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") }) })
-        @DeleteMapping("/playlists/{playlistID}/track/{trackID}/note")
+        @DeleteMapping("/playlists/{playlistID}/tracks/{trackID}/note")
         public ResponseEntity<GenericResponse> deleteTrackNote(Authentication userToken,
                         @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
                         @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
