@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +33,7 @@ import com.nandincube.jamjot.service.TrackAnnotationService;
 import com.nandincube.jamjot.dto.GenericResponse;
 import com.nandincube.jamjot.dto.NoteDTO;
 import com.nandincube.jamjot.dto.PlaylistDTO;
+import com.nandincube.jamjot.dto.TimestampResponse;
 import com.nandincube.jamjot.dto.TrackDTO;
 
 @RestController
@@ -109,7 +111,7 @@ public class AnnotationsController {
                 try {
                         return ResponseEntity.ok(new NoteDTO(
                                         playlistAnnotationService.getPlaylistNote(userID, playlistID)));
-                } catch (PlaylistNotFoundException e) {
+                } catch (PlaylistNotFoundException e) { 
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (RuntimeException e) {
@@ -140,7 +142,7 @@ public class AnnotationsController {
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "404", description = "User or playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
-                                                             {"message": "Error: Could not find user!"}
+                                                             {"message": "Error: Could not find playlist!"}
                                                         """)) }),
                         @ApiResponse(responseCode = "200", description = "Playlist note updated successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
@@ -439,10 +441,20 @@ public class AnnotationsController {
         }
 
         @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
-        @Operation(summary = "Update Track Note", description = "Update the note for a timestamp interval in a specific track that appears in a playlist")
+        @Operation(summary = "Update Timestamp Note", description = "Update the note for a timestamp interval in a specific track that appears in a playlist")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "404", description = "Timestamp not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find timestamp with specified ID!"}
+                                                        """)) }),
+                        @ApiResponse(responseCode = "200", description = "Timestamp note updated successfully", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Timestamp Note Updated!"}
+                                                        """))
+                        }),
+                        @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                                        @Content(mediaType = "*/*") }) })
 
-
-        
         @PutMapping("/playlists/timestamp/{timestampID}/note")
         public ResponseEntity<GenericResponse> updateTimestampNote(Authentication userToken,
                         @Parameter(description = "The timestamp ID for the specified timestamp", required = true) @PathVariable Long timestampID,
@@ -457,208 +469,140 @@ public class AnnotationsController {
                 } catch (TimestampNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
         }
 
+        @Tag(name = "Edit", description = "Endpoints for adding or updating playlist and track notes")
+        @Operation(summary = "Add Timestamp Note", description = "Add a note for a timestamp interval in a specific track that appears in a playlist")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find track or track number mismatch!"}
+                                                        """)) }),
+                        @ApiResponse(responseCode = "400", description = "Invalid timestamp interval - Invalid format, invalid start or end time, or end time exceeds track duration", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Time must be in the format mm:ss"}
+                                                        """)) }),
+                        @ApiResponse(responseCode = "200", description = "Timestamp note added successfully", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Timestamp Note Added!"}
+                                                        """))
+                        }),
+                        @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                                        @Content(mediaType = "*/*") }) })
 
+        @PostMapping("/playlists/timestamp/{timestampID}/note")
+        public ResponseEntity<GenericResponse> addTimestampNote(Authentication userToken,
+                        @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
+                        @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
+                        @Parameter(description = "The track number/position in playlist", required = true) @RequestParam(required = true) Integer trackNumber,
+                        @Parameter(description = "The start time in mins and seconds (mm:ss) for the timestamp", required = true) @RequestParam(required = true) String intervalStart,
+                        @Parameter(description = "The end time in mins and seconds (mm:ss) for the timestamp", required = true) @RequestParam(required = true) String intervalEnd,
+                        @RequestBody NoteDTO note) {
 
+                String userID = userToken.getName();
 
+                try {
+                        timestampAnnotationService.addTimestampNote(userID, playlistID, trackID, trackNumber,
+                                        note.getNote(), intervalStart, intervalEnd);
+                        return ResponseEntity.ok(new GenericResponse("Timestamp note added!"));
+                } catch (PlaylistNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (TrackNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (UserNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (IllegalArgumentException e) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                }
+        }
 
+        @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and track information and notes")
+        @Operation(summary = "Get Timestamp Notes", description = "Retrieve the timestamp notes for a specific track in a playlist")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find track or track number mismatch!"}
+                                                        """)) }),
+                           @ApiResponse(responseCode = "200", description = "Timestamp notes retrieved successfully", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = TimestampResponse.class), examples = @ExampleObject(value = """
+                                                             {
+                                                                "items": [
+                                                                    {
+                                                                        "timestampID": 1,
+                                                                        "start_time": "00:30",
+                                                                        "end_time": "00:45",
+                                                                        "note": "Sample timestamp note"
+                                                                    },
+                                                                    {
+                                                                        "timestampID": 2,
+                                                                        "start_time": "01:15",
+                                                                        "end_time": "01:30",
+                                                                        "note": "Another timestamp note",
 
-        // @Tag(name = "Edit", description = "Endpoints for adding or updating playlist
-        // and track notes")
-        // @Operation(summary = "Edit Timestamp Note", description = "Edit the note for
-        // a specific timestamp in a track")
-        // @ApiResponses(value = {
-        // @ApiResponse(responseCode = "404", description = "User, track, playlist or
-        // timestamp not found", content = {
-        // @Content(mediaType = "*/*", schema = @Schema(example = "Error: Could not find
-        // timestamp!")) }),
+                                                                    }
+                                                                ]
+                                                            }
+                                                        """))
+                        }),
+                        @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                                        @Content(mediaType = "*/*") }) })
 
-        // @ApiResponse(responseCode = "200", description = "Timestamp note updated
-        // successfully", content = {
-        // @Content(mediaType = "*/*", schema = @Schema(example = "Timestamp Note
-        // Updated!"))
-        // }) })
-        // @PutMapping("/playlists/{playlistID}/track/{trackID}/timestamp/{timestampID}/note")
-        // public ResponseEntity<String> updateTimestampNote(Authentication userToken,
-        // @Parameter(description = "The Spotify ID for specified playlist", required =
-        // true) @PathVariable String playlistID,
-        // @Parameter(description = "The Spotify ID for the specified track", required =
-        // true) @PathVariable String trackID,
-        // @Parameter(description = "The track number in playlist", required = true)
-        // @RequestParam(required = true) Integer trackNumber,
-        // @Parameter(description = "The timestamp ID for the specified timestamp",
-        // required = true) @PathVariable Long timestampID,
-        // @RequestBody NoteRequest note) {
+        @GetMapping("/playlists/timestamp/{timestampID}/note")
+        public ResponseEntity<?> getTimestampNotes(Authentication userToken,
+                        @Parameter(description = "The Spotify ID for specified playlist", required = true) @PathVariable String playlistID,
+                        @Parameter(description = "The Spotify ID for the specified track", required = true) @PathVariable String trackID,
+                        @Parameter(description = "The track number/position in playlist", required = true) @RequestParam(required = true) Integer trackNumber) {
 
-        // String userID = userToken.getName();
+                String userID = userToken.getName();
 
-        // try {
-        // annotationService.updateTimestampNote(userID, playlistID, trackID,
-        // trackNumber, note.getNote(),
-        // timestampID);
-        // return ResponseEntity.ok("Timestamp Note Updated!");
-        // } catch (PlaylistNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // } catch (TrackNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // } catch (UserNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // } catch (TimestampNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // }
-        // }
+                try {
+                        TimestampResponse timestampResponse = timestampAnnotationService.getTimestampNotes(userID, playlistID, trackID, trackNumber);
+                        return ResponseEntity.ok(timestampResponse);
+                } catch (TrackNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                }
+        }
 
-        // @Tag(name = "Edit", description = "Endpoints for adding or updating playlist
-        // and track notes")
-        // @Operation(summary = "Add Timestamp Note",description="Add the note for
-        // aspecific timestampin a track")
-        // @ApiResponses(value =
-        // {@ApiResponse(responseCode="404",description="User, track or playlist
-        // notfound",content={@Content(mediaType="*/*",schema=@Schema(example="Error:
-        // Could not
-        // findplaylist!"))}),@ApiResponse(responseCode="400",description="Start/End
-        // time format isinvalid orstart and
-        // end time
-        // interval is invalid", content =
-        // {@Content(mediaType="*/*",schema=@Schema(example="Start time must be inthe
-        // format mm:ss"))
-        // }),
+        @Tag(name = "Delete", description = "Endpoints for deleting playlist and track notes")
+        @Operation(summary = "Delete Timestamp Note", description = "Delete the timestampnote for a specific track in a playlist")
+        @ApiResponses(value = {
+                         @ApiResponse(responseCode = "404", description = "Timestamp not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find timestamp with specified ID!"}
+                                                        """)) }),
+                        @ApiResponse(responseCode = "200", description = "Timestamp note deleted successfully", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Timestamp Note Deleted!"}
+                                                        """))
+                        }),
+                        @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
+                                        @Content(mediaType = "*/*") }) })
+        @DeleteMapping("/playlists/{playlistID}/track/{trackID}/note")
+        public ResponseEntity<GenericResponse> deleteTimestampNote(Authentication userToken,
+                        @Parameter(description = "The timestamp ID for the specified timestamp", required = true) @PathVariable Long timestampID) {
+                String userID = userToken.getName();
 
-        // @ApiResponse(responseCode="200",description="Timestamp note
-        // updatedsuccessfully",content={@Content(mediaType="*/*",schema=@Schema(example="Timestamp
-        // NoteUpdated!"))})})
-
-        // @PostMapping("/playlists/{playlistID}/tracks/{trackID}/timestamps/note")
-        // public ResponseEntity<String> addTimestampNote(Authentication userToken,
-        // @Parameter(description = "The Spotify ID for specified playlist", required =
-        // true) @PathVariable String playlistID,
-        // @Parameter(description = "The Spotify ID for the specified track", required =
-        // true) @PathVariable String trackID,
-        // @Parameter(description = "The track number in playlist", required = true)
-        // @RequestParam(required = true) Integer trackNumber,
-        // @Parameter(description = "The start time in mins and seconds (mm:ss) for the
-        // timestamp", required = true) @RequestParam(required = true) String
-        // startInMins,
-        // @Parameter(description = "The end time in mins and seconds (mm:ss) for the
-        // timestamp", required = true) @RequestParam(required = true) String endInMins,
-        // @RequestBody NoteRequest note) {
-
-        // String userID = userToken.getName();
-
-        // try {
-        // annotationService.addTimestampNote(userID, playlistID, trackID, trackNumber,
-        // startInMins,
-        // endInMins, note.getNote());
-        // return ResponseEntity.ok("Timestamp Note Added!");
-        // } catch (PlaylistNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // } catch (TrackNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // } catch (UserNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // } catch (IllegalArgumentException e) {
-        // return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        // .body(e.getMessage());
-        // }
-        // }
-
-        // @Tag(name = "Retrieval", description = "Endpoints for retrieving playlist and
-        // track information and notes")
-        // @Operation(summary = "Get Timestamps in Track", description = "Retrieve all
-        // timestamps in a specific track in a playlist")
-        // @ApiResponses(value = {
-        // @ApiResponse(responseCode = "404", description = "User, track or playlist not
-        // found",
-        // content = {
-        // @Content(mediaType = "*/*", schema = @Schema(example = "Error: Could not find
-        // track or track number mismatch!")) }
-        // ),
-        // @ApiResponse(responseCode = "200", description = "Timestamps retrieved
-        // successfully", content = {
-        // @Content(mediaType = "*/*", schema = @Schema(implementation =
-        // TimestampDTO.class))
-        // }) })
-
-        // @GetMapping("/playlists/{playlistID}/track/{trackID}/timestamps")
-        // public ResponseEntity<TimestampResponse> getTimestampNotes(
-        // Authentication userToken,
-        // @Parameter(description = "The Spotify ID for specified playlist", required =
-        // true) @PathVariable String playlistID,
-        // @Parameter(description = "The Spotify ID for the specified track", required =
-        // true) @PathVariable String trackID,
-        // @Parameter(description = "The track number in playlist", required = true)
-        // @RequestParam(required = true) Integer trackNumber) {
-        // String userID = userToken.getName();
-        // TimestampResponse timestamps = null;
-        // try {
-        // timestamps = annotationService.getTimestampNotes(userID, playlistID, trackID,
-        // trackNumber);
-        // return ResponseEntity.ok(timestamps);
-        // } catch (PlaylistNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        // } catch (TrackNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        // }catch (UserNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        // }
-        // }
-
-        // @Tag(name = "Delete", description = "Endpoints for deleting playlist and
-        // track notes")
-        // @Operation(summary = "Delete Timestamp Note", description = "Delete the note
-        // for a specific timestamp in a track")
-        // @ApiResponses(value = {
-        // @ApiResponse(responseCode = "404", description = "User, track, playlist or
-        // timestamp not found", content = {
-        // @Content(mediaType = "*/*", schema = @Schema(example = "Error: Could not find
-        // timestamp!")) }),
-
-        // @ApiResponse(responseCode = "200", description = "Timestamp note deleted
-        // successfully", content = {
-        // @Content(mediaType = "*/*", schema = @Schema(example = "Timestamp Note
-        // Deleted!"))
-        // }) })
-        // @DeleteMapping("/playlists/{playlistID}/track/{trackID}/timestamp/{timestampID}/note")
-        // public ResponseEntity<String> deleteTimestampNote(
-        // Authentication userToken,
-        // @Parameter(description = "The Spotify ID for specified playlist", required =
-        // true) @PathVariable String playlistID,
-        // @Parameter(description = "The Spotify ID for the specified track", required =
-        // true) @PathVariable String trackID,
-        // @Parameter(description = "The track number in playlist", required = true)
-        // @RequestParam(required = true) Integer trackNumber,
-        // @Parameter(description = "The timestamp ID for the specified timestamp",
-        // required = true) @PathVariable Long timestampID) {
-
-        // String userID = userToken.getName();
-
-        // try {
-        // annotationService.deleteTimestampNote(userID, playlistID, trackID,
-        // trackNumber, timestampID);
-        // return ResponseEntity.ok("Timestamp Note Deleted!");
-        // } catch (PlaylistNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // } catch (TrackNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // } catch (UserNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-        // } catch (TimestampNotFoundException e) {
-        // return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        // .body(e.getMessage());
-
-        // }
-        // }
+                try {
+                        timestampAnnotationService.deleteTimestampNote(userID, timestampID);
+                        return ResponseEntity.ok(new GenericResponse("Timestamp Note Deleted!"));
+                } catch (TimestampNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                }
+        }
 
 }

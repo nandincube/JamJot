@@ -143,7 +143,7 @@ public class TimestampAnnotationService {
         Matcher matcher = pattern.matcher(timeInMins);
 
         if (!matcher.find()) {
-            throw new IllegalArgumentException("Time must be in the format mm:ss");
+            throw new IllegalArgumentException("Error: Time must be in the format mm:ss");
         }
 
         return Duration.ofMinutes(Long.parseLong(matcher.group(1)))
@@ -162,13 +162,13 @@ public class TimestampAnnotationService {
      */
     private void validateInterval(Duration start, Duration end, Duration trackDuration) {
         if (start.isNegative() || end.isNegative()) {
-            throw new IllegalArgumentException("Start time and end time must be non-negative");
+            throw new IllegalArgumentException("Error: Start time and end time must be non-negative");
         }
         if (start.compareTo(end) > 0) {
-            throw new IllegalArgumentException("Start time must be less than end time");
+            throw new IllegalArgumentException("Error: Start time must be less than end time");
         }
         if (end.compareTo(trackDuration) > 0) {
-            throw new IllegalArgumentException("End time must be less than track duration");
+            throw new IllegalArgumentException("Error: End time must be less than track duration");
         }
     }
 
