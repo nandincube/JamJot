@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.nandincube.jamjot.dto.TimestampResponseDTO;
-import com.nandincube.jamjot.dto.GetTimestampsResponse;
+import com.nandincube.jamjot.dto.GetTimestampNotesResponse;
+import com.nandincube.jamjot.dto.TimestampNoteResponseDTO;
 import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.exceptions.TimestampNotFoundException;
 import com.nandincube.jamjot.exceptions.TrackNotFoundException;
@@ -181,12 +181,12 @@ public class TimestampAnnotationService {
      * @param trackNumber - position of the track in the playlist (used to
      *                    disambiguate between multiple instances of the same track
      *                    in a playlist)
-     * @return a TimestampResponse object containing a list of TimestampDTOs
+     * @return a GetTimestampNotesResponse object containing a list of TimestampDTOs
      *         representing the timestamp notes for the track in the playlist
      * @throws TrackNotFoundException - if the track does not exist in the DB or
      *                                does not belong to the playlist
      */
-    public GetTimestampsResponse getTimestampNotes(String userID, String playlistID,
+    public GetTimestampNotesResponse getTimestampNotes(String userID, String playlistID,
             String trackID, Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException
 
     {
@@ -194,19 +194,19 @@ public class TimestampAnnotationService {
         ArrayList<Timestamp> timestamps = timestampService.findByPlaylistMemberID(userID, playlistID, trackID,
                 trackNumber);
         if (!timestamps.isEmpty()) {
-            ArrayList<TimestampResponseDTO> timestampDTOs = (ArrayList<TimestampResponseDTO>) timestamps
+            ArrayList<TimestampNoteResponseDTO> timestampDTOs = (ArrayList<TimestampNoteResponseDTO>) timestamps
                     .stream()
                     .map((ts) -> createTimestampDTO(ts))
                     .collect(Collectors.toList());
 
-            return new GetTimestampsResponse(timestampDTOs);
+            return new GetTimestampNotesResponse(timestampDTOs);
         }
 
         if (!trackAnnotationService.playlistTrackExistsOnSpotify(playlistID, userID, trackID, trackNumber)) {
             throw new TrackNotFoundException();
         }
 
-        return new GetTimestampsResponse(new ArrayList<TimestampResponseDTO>());
+        return new GetTimestampNotesResponse(new ArrayList<TimestampNoteResponseDTO>());
     }
 
     /**
@@ -214,10 +214,10 @@ public class TimestampAnnotationService {
      * the start and end times of the timestamp as strings in the format mm:ss.
      * 
      * @param timestamp - the Timestamp entity to convert
-     * @return a TimestampDTO object representing the input Timestamp entity
+     * @return a TimestampNoteResponseDTO object representing the input Timestamp entity
      */
-    private TimestampResponseDTO createTimestampDTO(Timestamp timestamp) {
-        return new TimestampResponseDTO(
+    private TimestampNoteResponseDTO createTimestampDTO(Timestamp timestamp) {
+        return new TimestampNoteResponseDTO(
                 timestamp.getId(),
                 String.format("%d:%02d", timestamp.getStart().toMinutes(), timestamp.getStart().toSeconds()),
                 String.format("%d:%02d", timestamp.getEnd().toMinutes(), timestamp.getEnd().toSeconds()),

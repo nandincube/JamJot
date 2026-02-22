@@ -7,7 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,16 +23,11 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
-import com.nandincube.jamjot.exceptions.TimestampNotFoundException;
 import com.nandincube.jamjot.exceptions.TrackNotFoundException;
 import com.nandincube.jamjot.exceptions.UserNotFoundException;
-import com.nandincube.jamjot.service.PlaylistAnnotationService;
-import com.nandincube.jamjot.service.TimestampAnnotationService;
 import com.nandincube.jamjot.service.TrackAnnotationService;
 import com.nandincube.jamjot.dto.GenericResponse;
 import com.nandincube.jamjot.dto.NoteDTO;
-import com.nandincube.jamjot.dto.PlaylistDTO;
-import com.nandincube.jamjot.dto.GetTimestampsResponse;
 import com.nandincube.jamjot.dto.TrackDTO;
 
 @RestController
@@ -41,15 +35,9 @@ import com.nandincube.jamjot.dto.TrackDTO;
 @Tag(name = "Annotations API", description = "Endpoints for managing playlist and track annotations")
 public class TrackAnnotationsController {
 
-        private final PlaylistAnnotationService playlistAnnotationService;
         private final TrackAnnotationService trackAnnotationService;
-        private final TimestampAnnotationService timestampAnnotationService;
 
-        public TrackAnnotationsController(PlaylistAnnotationService playlistAnnotationService,
-                        TrackAnnotationService trackAnnotationService,
-                        TimestampAnnotationService timestampAnnotationService) {
-                this.timestampAnnotationService = timestampAnnotationService;
-                this.playlistAnnotationService = playlistAnnotationService;
+        public TrackAnnotationsController(TrackAnnotationService trackAnnotationService) {
                 this.trackAnnotationService = trackAnnotationService;
         }
 

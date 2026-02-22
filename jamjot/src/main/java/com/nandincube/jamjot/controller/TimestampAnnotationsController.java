@@ -29,9 +29,9 @@ import com.nandincube.jamjot.exceptions.TrackNotFoundException;
 import com.nandincube.jamjot.exceptions.UserNotFoundException;
 import com.nandincube.jamjot.service.TimestampAnnotationService;
 import com.nandincube.jamjot.dto.GenericResponse;
+import com.nandincube.jamjot.dto.GetTimestampNotesResponse;
 import com.nandincube.jamjot.dto.NoteDTO;
-import com.nandincube.jamjot.dto.TimestampRequestDTO;
-import com.nandincube.jamjot.dto.GetTimestampsResponse;
+import com.nandincube.jamjot.dto.TimestampNoteRequestDTO;
 
 @RestController
 @RequestMapping("/annotations/timestamps")
@@ -108,7 +108,7 @@ public class TimestampAnnotationsController {
 
                 try {
                         timestampAnnotationService.addTimestampNote(userID, playlistID, trackID, trackNumber,
-                                        note.getNote(), intervalStart, intervalEnd);
+                                        note.getNote(), note.getIntervalStart(), note.getIntervalEnd());
                         return ResponseEntity.ok(new GenericResponse("Timestamp note added!"));
                 } catch (PlaylistNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -135,7 +135,7 @@ public class TimestampAnnotationsController {
                                                              {"message": "Error: Could not find track or track number mismatch!"}
                                                         """)) }),
                            @ApiResponse(responseCode = "200", description = "Timestamp notes retrieved successfully", content = {
-                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GetTimestampsResponse.class), examples = @ExampleObject(value = """
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GetTimestampNotesResponse.class), examples = @ExampleObject(value = """
                                                              {
                                                                 "items": [
                                                                     {
@@ -148,8 +148,7 @@ public class TimestampAnnotationsController {
                                                                         "timestampID": 2,
                                                                         "start_time": "01:15",
                                                                         "end_time": "01:30",
-                                                                        "note": "Another timestamp note",
-
+                                                                        "note": "Another timestamp note"
                                                                     }
                                                                 ]
                                                             }
@@ -167,7 +166,7 @@ public class TimestampAnnotationsController {
                 String userID = userToken.getName();
 
                 try {
-                        GetTimestampsResponse timestampResponse = timestampAnnotationService.getTimestampNotes(userID, playlistID, trackID, trackNumber);
+                        GetTimestampNotesResponse timestampResponse = timestampAnnotationService.getTimestampNotes(userID, playlistID, trackID, trackNumber);
                         return ResponseEntity.ok(timestampResponse);
                 } catch (TrackNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)

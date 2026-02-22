@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * DTO for encapsulating the note content associated with a playlist or track.
+ * This DTO is used for incoming requests to create or update notes associated with playlists or tracks.
  */
 public class NoteDTO {
     
