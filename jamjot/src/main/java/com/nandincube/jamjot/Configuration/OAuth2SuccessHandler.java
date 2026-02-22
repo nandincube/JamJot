@@ -3,11 +3,9 @@ package com.nandincube.jamjot.configuration;
 import java.io.IOException;
 
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import com.nandincube.jamjot.repository.UserRepository;
 import com.nandincube.jamjot.service.AuthenticationService;
 
 import jakarta.servlet.ServletException;

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * DTO for encapsulating the details of a timestamp annotation, including its ID, start time, end time, and associated note.
  */
-public record TimestampDTO(
+public record TimestampNoteResponseDTO(
     @Schema(example="1", description = "The unique ID of the timestamp")
     Long id,
     @Schema(example= "1:30", description = "The start time of the timestamp in the track")

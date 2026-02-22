@@ -72,6 +72,6 @@ public class TimestampService {
     }
 
     public ArrayList<Timestamp> findByPlaylistMemberID(String userID, String playlistID, String trackID, int trackNumber) {
-        return timestampRepository.findByPlaylistMemberID(userID, playlistID, trackID, trackNumber);
+        return (ArrayList) timestampRepository.findByPlaylistMemberID(userID, playlistID, trackID, trackNumber);
     }
 }

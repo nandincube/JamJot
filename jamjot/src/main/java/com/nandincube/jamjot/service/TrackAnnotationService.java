@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import com.nandincube.jamjot.dto.SpotifyTrackDTO;
+import com.nandincube.jamjot.dto.PlaylistTrackDTO;
 import com.nandincube.jamjot.dto.TrackDTO;
 import com.nandincube.jamjot.dto.TrackInfo;
 import com.nandincube.jamjot.dto.GetTracksResponse;
@@ -76,7 +76,7 @@ public class TrackAnnotationService {
      */
     public ArrayList<TrackDTO> getPlaylistTracksInfoFromSpotify(String playlistID) {
         ArrayList<TrackDTO> trackDTOs = new ArrayList<>();
-        String next = SPOTIFY_BASE_URL + "/playlists/" + playlistID + "/tracks";
+        String next = SPOTIFY_BASE_URL + "/playlists/" + playlistID + "/items";
 
         do {
             GetTracksResponse response = restClient.get()
@@ -93,7 +93,7 @@ public class TrackAnnotationService {
             }
 
             for (int i = 0; i < response.items().size(); i++) {
-                SpotifyTrackDTO apiTrackDTO = response.items().get(i);
+                PlaylistTrackDTO apiTrackDTO = response.items().get(i);
                 TrackDTO jamjotTrackDTO = new TrackDTO(i+1, apiTrackDTO);
                 trackDTOs.add(jamjotTrackDTO);
             }
@@ -121,7 +121,7 @@ public class TrackAnnotationService {
         ArrayList<TrackDTO> tracks = getPlaylistTracksInfoFromSpotify(playlistID);
 
         Boolean exists = tracks.stream().anyMatch(
-                (t) -> t.entry().track().id().equals(trackID) && t.track_number() == trackNumber);
+                (t) -> t.entry().item().id().equals(trackID) && t.track_number() == trackNumber);
         return exists;
     }
 

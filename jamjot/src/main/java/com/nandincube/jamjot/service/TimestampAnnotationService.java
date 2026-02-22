@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.nandincube.jamjot.dto.TimestampDTO;
-import com.nandincube.jamjot.dto.TimestampResponse;
+import com.nandincube.jamjot.dto.TimestampResponseDTO;
+import com.nandincube.jamjot.dto.GetTimestampsResponse;
 import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.exceptions.TimestampNotFoundException;
 import com.nandincube.jamjot.exceptions.TrackNotFoundException;
@@ -186,7 +186,7 @@ public class TimestampAnnotationService {
      * @throws TrackNotFoundException - if the track does not exist in the DB or
      *                                does not belong to the playlist
      */
-    public TimestampResponse getTimestampNotes(String userID, String playlistID,
+    public GetTimestampsResponse getTimestampNotes(String userID, String playlistID,
             String trackID, Integer trackNumber) throws PlaylistNotFoundException, TrackNotFoundException
 
     {
@@ -194,19 +194,19 @@ public class TimestampAnnotationService {
         ArrayList<Timestamp> timestamps = timestampService.findByPlaylistMemberID(userID, playlistID, trackID,
                 trackNumber);
         if (!timestamps.isEmpty()) {
-            ArrayList<TimestampDTO> timestampDTOs = (ArrayList<TimestampDTO>) timestamps
+            ArrayList<TimestampResponseDTO> timestampDTOs = (ArrayList<TimestampResponseDTO>) timestamps
                     .stream()
                     .map((ts) -> createTimestampDTO(ts))
                     .collect(Collectors.toList());
 
-            return new TimestampResponse(timestampDTOs);
+            return new GetTimestampsResponse(timestampDTOs);
         }
 
         if (!trackAnnotationService.playlistTrackExistsOnSpotify(playlistID, userID, trackID, trackNumber)) {
             throw new TrackNotFoundException();
         }
 
-        return new TimestampResponse(new ArrayList<TimestampDTO>());
+        return new GetTimestampsResponse(new ArrayList<TimestampResponseDTO>());
     }
 
     /**
@@ -216,8 +216,8 @@ public class TimestampAnnotationService {
      * @param timestamp - the Timestamp entity to convert
      * @return a TimestampDTO object representing the input Timestamp entity
      */
-    private TimestampDTO createTimestampDTO(Timestamp timestamp) {
-        return new TimestampDTO(
+    private TimestampResponseDTO createTimestampDTO(Timestamp timestamp) {
+        return new TimestampResponseDTO(
                 timestamp.getId(),
                 String.format("%d:%02d", timestamp.getStart().toMinutes(), timestamp.getStart().toSeconds()),
                 String.format("%d:%02d", timestamp.getEnd().toMinutes(), timestamp.getEnd().toSeconds()),

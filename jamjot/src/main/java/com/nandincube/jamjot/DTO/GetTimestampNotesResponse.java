@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 /**
  * DTO for encapsulating the response of retrieving timestamp annotations associated track.
  */
-public record TimestampResponse (
+public record GetTimestampNotesResponse (
     @Schema(description = "The list of timestamps")
-    ArrayList<TimestampDTO> items
+    ArrayList<TimestampNoteResponseDTO> items
 ) {}
