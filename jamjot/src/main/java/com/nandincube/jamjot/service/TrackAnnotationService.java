@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -54,10 +55,14 @@ public class TrackAnnotationService {
         TrackInfo spotifyTrackDTO = restClient.get()
                 .uri(trackURL)
                 .retrieve()
-                .onStatus(status -> status.value() == 404,
+                .onStatus(status -> status == HttpStatus.NOT_FOUND,
                         (req, res) -> {
-                            new RuntimeException(new TrackNotFoundException());
+                            throw new RuntimeException(new TrackNotFoundException());
                         })
+                   .onStatus(status -> status == HttpStatus.UNAUTHORIZED,
+                            (req, res) -> {
+                                throw new UserNotFoundException();
+                            })
                 .body(TrackInfo.class);
 
         if (spotifyTrackDTO == null) {
@@ -82,9 +87,17 @@ public class TrackAnnotationService {
             GetTracksResponse response = restClient.get()
                     .uri(next)
                     .retrieve()
-                    .onStatus(status -> status.value() == 404,
+                    .onStatus(status -> status == HttpStatus.NOT_FOUND,
                             (req, res) -> {
-                                new RuntimeException(new PlaylistNotFoundException());
+                                throw new RuntimeException(new PlaylistNotFoundException());
+                            })
+                    .onStatus(status -> status == HttpStatus.FORBIDDEN,
+                            (req, res) -> {
+                                throw new RuntimeException(new PlaylistNotFoundException());
+                            })
+                    .onStatus(status -> status == HttpStatus.UNAUTHORIZED,
+                            (req, res) -> {
+                                throw new UserNotFoundException();
                             })
                     .body(GetTracksResponse.class);
 

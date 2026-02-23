@@ -1,8 +1,6 @@
 package com.nandincube.jamjot.service;
 
 import java.util.ArrayList;
-import java.util.Optional;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -13,7 +11,6 @@ import com.nandincube.jamjot.exceptions.PlaylistNotFoundException;
 import com.nandincube.jamjot.exceptions.UserNotFoundException;
 import com.nandincube.jamjot.model.Playlist;
 import com.nandincube.jamjot.model.User;
-import com.nandincube.jamjot.service.UserService;
 
 @Service
 public class PlaylistAnnotationService {
@@ -46,6 +43,10 @@ public class PlaylistAnnotationService {
             GetPlaylistsResponse response = restClient.get()
                     .uri(next)
                     .retrieve()
+                    .onStatus(status -> status == HttpStatus.UNAUTHORIZED,
+                            (req, res) -> {
+                                throw new UserNotFoundException();
+                            })
                     .body(GetPlaylistsResponse.class);
 
             if (response == null) {
@@ -75,6 +76,13 @@ public class PlaylistAnnotationService {
                 .onStatus(status -> status == HttpStatus.NOT_FOUND, (req, res) -> {
                     throw new RuntimeException(new PlaylistNotFoundException());
                 })
+                .onStatus(status -> status == HttpStatus.FORBIDDEN, (req, res) -> {
+                    throw new RuntimeException(new PlaylistNotFoundException());
+                })
+                .onStatus(status -> status == HttpStatus.UNAUTHORIZED,
+                        (req, res) -> {
+                            throw new UserNotFoundException();
+                        })
                 .body(PlaylistDTO.class);
 
         return playlistDTO;
@@ -88,7 +96,7 @@ public class PlaylistAnnotationService {
      * @return boolean - True if the playlist exists and belongs to the user, false
      *         otherwise.
      */
-    protected boolean playlistExistsOnSpotify(String playlistID, String userID)  {
+    protected boolean playlistExistsOnSpotify(String playlistID, String userID) {
         PlaylistDTO playlist = getPlaylistInfoFromSpotify(playlistID);
         if (playlist == null || !playlist.owner().id().equals(userID)) {
             return false;
@@ -107,7 +115,7 @@ public class PlaylistAnnotationService {
      */
     protected Playlist getPlaylistFromDB(String userID, String playlistID) throws PlaylistNotFoundException {
         Playlist playlist = playlistService.findByPlaylistIdandUserId(playlistID, userID)
-            .orElseThrow(PlaylistNotFoundException::new);
+                .orElseThrow(PlaylistNotFoundException::new);
 
         return playlist;
 
@@ -195,7 +203,7 @@ public class PlaylistAnnotationService {
 
         PlaylistDTO playlistDTO = getPlaylistInfoFromSpotify(playlistID);
         User user = userService.findById(userID).orElseThrow(UserNotFoundException::new);
-      
+
         return new Playlist(playlistID, playlistDTO.name(), user);
     }
 

@@ -48,17 +48,24 @@ public class PlaylistAnnotationsController {
          */
         @Operation(summary = "Get Playlists", description = "Retrieve all playlists made by the authenticated user from Spotify")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Playlists retrieved successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Playlists retrieved successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = PlaylistDTO.class)) }),
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
+                                                        """)) }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") })
         })
         @GetMapping("")
-        public ResponseEntity<ArrayList<PlaylistDTO>> getPlaylists() {
+        public ResponseEntity<?> getPlaylists() {
                 try {
                         ArrayList<PlaylistDTO> playlists = playlistAnnotationService.getPlaylistsInfoFromSpotify();
                         return ResponseEntity.ok(playlists);
 
+                } catch (UserNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                        .body(new GenericResponse(e.getMessage()));
                 } catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
@@ -76,12 +83,16 @@ public class PlaylistAnnotationsController {
          */
         @Operation(summary = "Get Playlist Note", description = "Retrieve the note for a specific playlist")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "Playlist not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find playlist!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
+                                                        """)) }),
 
-                        @ApiResponse(responseCode = "200", description = "Playlist note retrieved successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Playlist note retrieved successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = NoteDTO.class), examples = @ExampleObject(value = """
                                                              {"note": "Sample playlist note"}
                                                         """)) }),
@@ -97,6 +108,9 @@ public class PlaylistAnnotationsController {
                                         playlistAnnotationService.getPlaylistNote(userID, playlistID)));
                 } catch (PlaylistNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(e.getMessage()));
+                } catch (UserNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (RuntimeException e) {
                         if (e.getCause() instanceof PlaylistNotFoundException ex) { // if playlist is not found - i.e.
@@ -123,11 +137,15 @@ public class PlaylistAnnotationsController {
          */
         @Operation(summary = "Edit Playlist Note", description = "Add or Update the note for a specific playlist ")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "User or playlist not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find playlist!"}
                                                         """)) }),
-                        @ApiResponse(responseCode = "200", description = "Playlist note updated successfully", content = {
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication(re-authentication required)!"}
+                                                        """)) }),
+                        @ApiResponse(responseCode = "200", description = "OK - Playlist note updated successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Playlist Note Updated!"}
                                                         """)) }),
@@ -147,7 +165,7 @@ public class PlaylistAnnotationsController {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (UserNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (RuntimeException e) {
                         if (e.getCause() instanceof PlaylistNotFoundException ex) { // if playlist is not found
@@ -173,12 +191,16 @@ public class PlaylistAnnotationsController {
          */
         @Operation(summary = "Delete Playlist Note", description = "Delete the note for a specific playlist")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "User or playlist not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find playlist!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication(re-authentication required)!"}
+                                                        """)) }),
 
-                        @ApiResponse(responseCode = "200", description = "Playlist note deleted successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Playlist note deleted successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Playlist Note Deleted!"}
                                                         """))
@@ -198,7 +220,7 @@ public class PlaylistAnnotationsController {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (UserNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (RuntimeException e) {
                         if (e.getCause() instanceof PlaylistNotFoundException ex) { // if playlist is not found - i.e.

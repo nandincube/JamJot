@@ -41,7 +41,6 @@ public class TrackAnnotationsController {
                 this.trackAnnotationService = trackAnnotationService;
         }
 
-
         /**
          * This method retrieves all tracks in a specific playlist from Spotify using
          * the playlist ID.
@@ -51,10 +50,14 @@ public class TrackAnnotationsController {
          */
         @Operation(summary = "Get Tracks in Playlist", description = "Retrieve all tracks in a specific playlist from Spotify")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "200", description = "Tracks retrieved successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Tracks retrieved successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = TrackDTO.class)) }),
-                        @ApiResponse(responseCode = "404", description = "Playlist not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Playlist not found", content = {
                                         @Content(mediaType = "*/*") }),
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
+                                                        """)) }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") })
         })
@@ -66,6 +69,8 @@ public class TrackAnnotationsController {
                         ArrayList<TrackDTO> tracks = trackAnnotationService
                                         .getPlaylistTracksInfoFromSpotify(playlistID);
                         return ResponseEntity.ok(tracks);
+                } catch (UserNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
                 } catch (RuntimeException e) {
                         if (e.getCause() instanceof PlaylistNotFoundException ex) { // if playlist is not found - i.e.
                                                                                     // playlist ID invalid
@@ -92,12 +97,16 @@ public class TrackAnnotationsController {
          */
         @Operation(summary = "Get Track Note", description = "Retrieve the note for a specific track in a playlist")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "Track or playlist not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Track or playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find playlist!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
+                                                        """)) }),
 
-                        @ApiResponse(responseCode = "200", description = "Track note retrieved successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Track note retrieved successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = NoteDTO.class), examples = @ExampleObject(value = """
                                                              {"note": "Sample track note"}
                                                         """))
@@ -122,6 +131,10 @@ public class TrackAnnotationsController {
                 } catch (TrackNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
+                } catch (UserNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                        .body(new GenericResponse(e.getMessage()));
+
                 } catch (RuntimeException e) {
                         if (e.getCause() instanceof TrackNotFoundException ex) { // if playlist is not found - i.e.
                                                                                  // playlist ID invalid
@@ -148,13 +161,17 @@ public class TrackAnnotationsController {
          */
         @Operation(summary = "Edit Track Note", description = "Add or Update the note for a specific track in a playlist")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Track or playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find track or track number mismatch!"}
                                                         """))
                         }),
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
+                                                        """)) }),
 
-                        @ApiResponse(responseCode = "200", description = "Track note updated successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Track note updated successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Track Note Updated!"}
                                                         """))
@@ -180,7 +197,7 @@ public class TrackAnnotationsController {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (UserNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (RuntimeException e) {
                         if (e.getCause() instanceof PlaylistNotFoundException ep
@@ -211,15 +228,19 @@ public class TrackAnnotationsController {
          */
         @Operation(summary = "Delete Track Note", description = "Delete the note for a specific track in a playlist")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Track or playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find track or track number mismatch!"}
                                                         """)) }),
-                        @ApiResponse(responseCode = "200", description = "Track note deleted successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Track note deleted successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Track Note Deleted!"}
                                                         """))
                         }),
+                          @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
+                                                        """)) }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") }) })
         @DeleteMapping("/playlists/{playlistID}/tracks/{trackID}/note")
@@ -239,9 +260,19 @@ public class TrackAnnotationsController {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (UserNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                         .body(new GenericResponse(e.getMessage()));
-                } catch (Exception e) {
+                } catch (RuntimeException e) {
+                        if (e.getCause() instanceof PlaylistNotFoundException ep
+                                        || e.getCause() instanceof TrackNotFoundException et) { // if playlist or track
+                                                                                                // is not found - i.e.
+                                // playlist or track ID invalid
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                                .body(new GenericResponse(e.getMessage()));
+                        }
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+
+                }catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
         }

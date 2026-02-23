@@ -46,11 +46,16 @@ public class TimestampAnnotationsController {
 
         @Operation(summary = "Update Timestamp Note", description = "Update the note for a timestamp interval in a specific track that appears in a playlist")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "Timestamp not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Timestamp not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find timestamp with specified ID!"}
                                                         """)) }),
-                        @ApiResponse(responseCode = "200", description = "Timestamp note updated successfully", content = {
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
+                                                        """)) }),
+
+                        @ApiResponse(responseCode = "200", description = "OK - Timestamp note updated successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Timestamp Note Updated!"}
                                                         """))
@@ -69,25 +74,32 @@ public class TimestampAnnotationsController {
                         timestampAnnotationService.updateTimestampNote(userID, timestampID,
                                         note.getNote());
                         return ResponseEntity.ok(new GenericResponse("Timestamp note updated!"));
+                } catch (UserNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                        .body(new GenericResponse(e.getMessage()));
                 } catch (TimestampNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
-                } catch (Exception e) {
+                }catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
         }
 
         @Operation(summary = "Add Timestamp Note", description = "Add a note for a timestamp interval in a specific track that appears in a playlist")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Track or playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find track or track number mismatch!"}
                                                         """)) }),
-                        @ApiResponse(responseCode = "400", description = "Invalid timestamp interval - Invalid format, invalid start or end time, or end time exceeds track duration", content = {
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
+                                                        """)) }),
+                        @ApiResponse(responseCode = "400", description = "Bad Request - Invalid timestamp interval", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Time must be in the format mm:ss"}
                                                         """)) }),
-                        @ApiResponse(responseCode = "200", description = "Timestamp note added successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Timestamp note added successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Timestamp Note Added!"}
                                                         """))
@@ -115,23 +127,30 @@ public class TimestampAnnotationsController {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (UserNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                                         .body(new GenericResponse(e.getMessage()));
                 } catch (IllegalArgumentException e) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                         .body(new GenericResponse(e.getMessage()));
-                } catch (Exception e) {
+                } catch(RuntimeException e) {
+                        if(e.getCause() instanceof PlaylistNotFoundException ex){
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(ex.getMessage()));
+                        } else {
+                                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                        }
+                } catch(Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
         }
 
         @Operation(summary = "Get Timestamp Notes", description = "Retrieve the timestamp notes for a specific track in a playlist")
         @ApiResponses(value = {
-                        @ApiResponse(responseCode = "404", description = "User, track or playlist not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Track or playlist not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find track or track number mismatch!"}
                                                         """)) }),
-                           @ApiResponse(responseCode = "200", description = "Timestamp notes retrieved successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Timestamp notes retrieved successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GetTimestampNotesResponse.class), examples = @ExampleObject(value = """
                                                              {
                                                                 "items": [
@@ -151,6 +170,10 @@ public class TimestampAnnotationsController {
                                                             }
                                                         """))
                         }),
+                         @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                                        @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
+                                                             {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
+                                                        """)) }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") }) })
 
@@ -163,11 +186,22 @@ public class TimestampAnnotationsController {
                 String userID = userToken.getName();
 
                 try {
-                        GetTimestampNotesResponse timestampResponse = timestampAnnotationService.getTimestampNotes(userID, playlistID, trackID, trackNumber);
+                        GetTimestampNotesResponse timestampResponse = timestampAnnotationService
+                                        .getTimestampNotes(userID, playlistID, trackID, trackNumber);
                         return ResponseEntity.ok(timestampResponse);
+                } catch (UserNotFoundException e) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                        .body(new GenericResponse(e.getMessage()));
                 } catch (TrackNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
+                } catch(RuntimeException e){
+                        if(e.getCause() instanceof PlaylistNotFoundException ex){
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                        .body(new GenericResponse(ex.getMessage()));
+                        } else {
+                                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                        }
                 } catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
@@ -175,11 +209,11 @@ public class TimestampAnnotationsController {
 
         @Operation(summary = "Delete Timestamp Note", description = "Delete the timestampnote for a specific track in a playlist")
         @ApiResponses(value = {
-                         @ApiResponse(responseCode = "404", description = "Timestamp not found", content = {
+                        @ApiResponse(responseCode = "404", description = "Not Found - Timestamp not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find timestamp with specified ID!"}
                                                         """)) }),
-                        @ApiResponse(responseCode = "200", description = "Timestamp note deleted successfully", content = {
+                        @ApiResponse(responseCode = "200", description = "OK - Timestamp note deleted successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Timestamp Note Deleted!"}
                                                         """))
