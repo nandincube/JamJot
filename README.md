@@ -45,29 +45,45 @@ This project was built to explore third-party API integration, secure authentica
 
 To Run Locally, 
 
-### 1) Clone and enter the project
+### 1) Clone the project
+
+Clone the repository and enter project using the following commands: 
+
 ```bash
 git clone https://github.com/nandincube/jamjot.git
 cd jamjot
 ```
 
-### 2) Create a .env file in the project root directory, with the following information:
+### 2) Create a .env file 
 
-`SPOTIFY_CLIENT_ID=<spotify_client_id>
+The application loads environment variables from a .env file via:
+
+```properties
+spring.config.import: file:.env[.properties]
+```
+
+Create a .env in the root directory (same level as pom.xml), with the following information:
+
+```properties
+SPOTIFY_CLIENT_ID=<spotify_client_id>
 SPOTIFY_CLIENT_SECRET=<spotify_client_secret>
 REDIRECT_URI=http://127.0.0.1:8081/login/oauth2/code/spotify
 
 DATABASE_URL=jdbc:postgresql://localhost:5432/<database_name>
 DATABASE_USER=<postgres_user>
-DATABASE_PASSWORD=<database_password>`
+DATABASE_PASSWORD=<database_password>
+```
 
+**Note: Spotify is configured to redirect to port 8081 and ensure that redirect uri matches with what is configured in your Spotify Developer Dashboard**
 
-**Note: Spotify is configured to redirect to port 8081**
+### 3) Create Database 
+Create a Postgres database and fill in relevant information in the .env file 
 
-### 3) Create Postgres Database with preferred name
 ### 4) Run the application
 Using the Maven Wrapper, run the following command:
+```bash
 ./mvnw spring-boot:run
+```
 
 The server will run on:
 
@@ -78,7 +94,7 @@ The API documentation will be available at:
 http://127.0.0.1:8081/swagger-ui/index.html
 
 
-Note: Spotify is configured to allow requests from 127.0.0.1, as opposed to localhost. Therefore, this should not be replaced by localhost in URL/URIs.
+**Note: If running locally, Spotify is configured to allow requests from 127.0.0.1, as opposed to localhost. Therefore, this should not be replaced by localhost in URL/URIs.**
 
 
 ## Live Demo/Documentation
