@@ -31,12 +31,15 @@ This project was built to explore third-party API integration, secure authentica
 
 ## Architecture and Design Overview
 - The system has a layered architecture (Model-View-Controller architecture implemented using a Service-Repository pattern) to facilitate seperation of concerns. In this architecture, the controller layer handles HTTP requests and response mapping, the service layer contains business logic and perfroms ownership validation, and the repository layer manages data persistence using Spring Data JPA.
--  OAuth2 authentication via Spotify was performed to allow for access to protected resources, where access tokens and other relevant credentials are stored and managed by Spring Security.
-- The RESTful endpoints provided in this API are secured by Spring Security
+-  OAuth2 authentication via Spotify is performed to allow for access to protected resources, where access tokens and other relevant credentials are stored and managed by Spring Security.
+- The RESTful endpoints provided in are also secured by Spring Security.
 - Relational database schema models users, playlist, tracks and timestamps. This data model is shown in the image below:
 
 ![ER- Diagram](jamjot/docs/JamJot%20ER-Diagram.drawio.png) 
-- All annotation operations are restricted to authenticated users and validated against the ownership of the playlist being annotated
+
+The ternary relationship "contains" is realised as the "Playlist Member" entity set. This entity set or relation is responsible for storing the set of tracks contained in each playlist. In other words, each entity represents a track's membership in a particular playlist, where tracks can appear in the same playlist multiple times and can appear across different playlists.
+
+- All annotation operations are restricted to authenticated users and validated against the ownership of user playlists
 
 ## Installation and Usage
 
@@ -77,13 +80,14 @@ DATABASE_USER=<postgres_user>
 DATABASE_PASSWORD=<database_password>
 ```
 
-**Note: Spotify is configured to redirect to port 8081 and ensure that redirect uri matches with what is configured in your Spotify Developer Dashboard**
+**Ensure that redirect uri matches what is configured in your Spotify Developer Dashboard**
 
 ### 3) Create Database 
 Create a Postgres database and fill in relevant information in the .env file 
 
 ### 4) Run the application
 Using the Maven Wrapper, run the following command:
+
 ```bash
 ./mvnw spring-boot:run
 ```
@@ -97,7 +101,7 @@ The API documentation will be available at:
 http://127.0.0.1:8081/swagger-ui/index.html
 
 
-**Note: If running locally, Spotify is configured to allow requests from 127.0.0.1, as opposed to localhost. Therefore, this should not be replaced by localhost in URL/URIs.**
+**Note: If running locally, Spotify is configured to allow requests from 127.0.0.1 (as opposed to "localhost"). Therefore, 127.0.0.1 should not be replaced with  localhost in URL/URIs.**
 
 
 ## Live Demo/Documentation
@@ -115,4 +119,4 @@ Jamjot was developed as a backend-focused personal project to explore OAuth inte
 
 ## Future Improvements
 - Comprehensive Unit and Integration testing
-- Simplification of ID for Playlist Member Entity. Primary Key in future will be reduced to track number and playlist id.
+- Simplification of ID for Playlist Member Entity. The application was originally designed to support playlists where track repetition was not accounted for. In order to accomodation for repetition, track number was added to the Playlist primary key. Although, this is a valid primary key and supports operations, it is not minimal. In future, the trackID can be removed from the the Playlist Member Entity 
