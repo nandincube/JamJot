@@ -46,23 +46,25 @@ This project was built to explore third-party API integration, secure authentica
 To Run Locally, 
 
 ### 1) Clone and enter the project
-`git clone https://github.com/nandincube/jamjot.git
-cd jamjot`
+```bash
+git clone https://github.com/nandincube/jamjot.git
+cd jamjot
+```
 
 ### 2) Create a .env file in the project root directory, with the following information:
 
-SPOTIFY_CLIENT_ID=<spotify_client_id>
+`SPOTIFY_CLIENT_ID=<spotify_client_id>
 SPOTIFY_CLIENT_SECRET=<spotify_client_secret>
 REDIRECT_URI=http://127.0.0.1:8081/login/oauth2/code/spotify
 
 DATABASE_URL=jdbc:postgresql://localhost:5432/<database_name>
 DATABASE_USER=<postgres_user>
-DATABASE_PASSWORD=<database_password>
+DATABASE_PASSWORD=<database_password>`
 
 
 **Note: Spotify is configured to redirect to port 8081**
 
-### 3) Create Postgres Database with prefered name
+### 3) Create Postgres Database with preferred name
 ### 4) Run the application
 Using the Maven Wrapper, run the following command:
 ./mvnw spring-boot:run
