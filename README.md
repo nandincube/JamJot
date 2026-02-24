@@ -45,12 +45,12 @@ The ternary relationship "contains" is realised as the "Playlist Member" entity 
 ## Installation and Usage
 
 ### Prerequisites
-- Java 21+
+- Java 21
 - Maven (or use `./mvnw`)
 - PostgreSQL running locally (or a hosted Postgres instance)
-- A Spotify Developer app (Client ID/Secret + Redirect URI)
+- A Spotify Developer app (Client ID/Secret and Redirect URI)
 
-To Run Locally, 
+**To Run Locally,**
 
 ### 1) Clone the project
 
@@ -120,4 +120,4 @@ Jamjot was developed as a backend-focused personal project to explore OAuth inte
 
 ## Future Improvements
 - Comprehensive Unit and Integration testing
-- Simplification of ID for Playlist Member Entity. The application was originally designed to support playlists where track repetition was not accounted for. In order to accomodation for repetition, track number was added to the Playlist primary key. Although, this is a valid primary key and supports operations, it is not minimal. In future, the trackID can be removed from the the Playlist Member Entity 
+- Simplification of ID for Playlist Member Entity. The application was originally designed to support playlists where track repetition was not accounted for. In order to accomodation for repetition, track number was added to the Playlist primary key. Although, this is a valid primary key and supports operations, it is not minimal. In future, the trackID can be removed from the the Playlist Member Entity.
