@@ -32,8 +32,10 @@ This project was built to explore third-party API integration, secure authentica
 - The system has a layered architecture (Model-View-Controller architecture implemented using a Service-Repository pattern) to facilitate seperation of concerns. In this architecture, the controller layer handles HTTP requests and response mapping, the service layer contains business logic and perfroms ownership validation, and the repository layer manages data persistence using Spring Data JPA.
 -  OAuth2 authentication via Spotify was performed to allow for access to protected resources, where access tokens and other relevant credentials are stored and managed by Spring Security.
 - The RESTful endpoints provided in this API are secured by Spring Security
-- Relational database schema models users, playlist, tracks and timestamps. This data model is shown in the ![ER- Diagram](jamjot/docs/JamJot%20ER-Diagram.drawio.png) contained in the docs directory.
-- All annotation operatioins are restricted to authenticated users and validated against the ownership of the playlist being annotated
+- Relational database schema models users, playlist, tracks and timestamps. This data model is shown in the image below:
+
+![ER- Diagram](jamjot/docs/JamJot%20ER-Diagram.drawio.png) 
+- All annotation operations are restricted to authenticated users and validated against the ownership of the playlist being annotated
 
 ## Installation and Usage
 
