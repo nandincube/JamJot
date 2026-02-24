@@ -1,8 +1,8 @@
 # JamJot
 **Annotate songs in your Spotify playlist with personal notes**
 
-**Interactive API Documentation (Swagger UI) - Spotify Account Required:**
-[Jamjot API Demo](https://jamjot.onrender.com)
+Interactive API Documentation (Swagger UI) - Spotify Account Required:
+[Jamjot API Docs](https://jamjot.onrender.com)
 
 ## Overview
 Jamjot is a RESTful API that allows users to attach personal annotations/notes to songs within their existing Spotify playlists. The system integrates with the Spotify Web API to retrieve user's playlists and enable storing time-based notes, reflections or contextual metadata linked to specific songs.
