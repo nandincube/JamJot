@@ -3,6 +3,7 @@
 
 Interactive API Documentation (Swagger UI) - Spotify Account Required:
 <br>
+<br>
 [Jamjot API Docs](https://jamjot.onrender.com)
 
 ## Overview
@@ -109,7 +110,9 @@ http://127.0.0.1:8081/swagger-ui/index.html
 The API is fully deployed and can be tested interactively using Swagger UI:
 
 **Swagger UI:**
-(https://jamjot.onrender.com)
+<br>
+<br>
+[Jamjot API Docs](https://jamjot.onrender.com)
 
 
 ## Motivation
