@@ -59,10 +59,13 @@ public class TrackAnnotationService {
                         (req, res) -> {
                             throw new RuntimeException(new TrackNotFoundException());
                         })
-                   .onStatus(status -> status == HttpStatus.UNAUTHORIZED,
-                            (req, res) -> {
-                                throw new UserNotFoundException();
-                            })
+                .onStatus(status -> status == HttpStatus.UNAUTHORIZED,
+                        (req, res) -> {
+                            throw new UserNotFoundException();
+                        })
+                 .onStatus(status -> status == HttpStatus.BAD_REQUEST, (req, res) -> {
+                    throw new RuntimeException(new TrackNotFoundException());
+                })
                 .body(TrackInfo.class);
 
         if (spotifyTrackDTO == null) {
@@ -99,6 +102,9 @@ public class TrackAnnotationService {
                             (req, res) -> {
                                 throw new UserNotFoundException();
                             })
+                    .onStatus(status -> status == HttpStatus.BAD_REQUEST, (req, res) -> {
+                        throw new RuntimeException(new PlaylistNotFoundException());
+                    })
                     .body(GetTracksResponse.class);
 
             if (response == null) {
@@ -107,7 +113,7 @@ public class TrackAnnotationService {
 
             for (int i = 0; i < response.items().size(); i++) {
                 PlaylistTrackDTO apiTrackDTO = response.items().get(i);
-                TrackDTO jamjotTrackDTO = new TrackDTO(i+1, apiTrackDTO);
+                TrackDTO jamjotTrackDTO = new TrackDTO(i + 1, apiTrackDTO);
                 trackDTOs.add(jamjotTrackDTO);
             }
 

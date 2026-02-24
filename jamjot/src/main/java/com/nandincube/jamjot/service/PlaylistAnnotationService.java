@@ -83,6 +83,9 @@ public class PlaylistAnnotationService {
                         (req, res) -> {
                             throw new UserNotFoundException();
                         })
+                .onStatus(status -> status == HttpStatus.BAD_REQUEST, (req, res) -> {
+                    throw new RuntimeException(new PlaylistNotFoundException());
+                })
                 .body(PlaylistDTO.class);
 
         return playlistDTO;

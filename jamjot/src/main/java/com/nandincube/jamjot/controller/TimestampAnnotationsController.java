@@ -95,9 +95,9 @@ public class TimestampAnnotationsController {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
                                                         """)) }),
-                        @ApiResponse(responseCode = "400", description = "Bad Request - Invalid timestamp interval", content = {
+                        @ApiResponse(responseCode = "400", description = "Bad Request - Invalid timestamp interval (incl. format issues and interval duration issues)", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
-                                                             {"message": "Error: Time must be in the format mm:ss"}
+                                                             {"message": "Error: End time must be less than track duration"}
                                                         """)) }),
                         @ApiResponse(responseCode = "200", description = "OK - Timestamp note added successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """

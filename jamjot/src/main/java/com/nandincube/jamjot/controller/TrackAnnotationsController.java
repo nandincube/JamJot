@@ -62,7 +62,7 @@ public class TrackAnnotationsController {
                                         @Content(mediaType = "*/*") })
         })
         @GetMapping("/playlists/{playlistID}/tracks")
-        public ResponseEntity<ArrayList<TrackDTO>> getTracks(
+        public ResponseEntity<?> getTracks(
                         @Parameter(description = "The Spotify ID for the specified playlist", required = true) @PathVariable String playlistID) {
 
                 try {
@@ -70,12 +70,12 @@ public class TrackAnnotationsController {
                                         .getPlaylistTracksInfoFromSpotify(playlistID);
                         return ResponseEntity.ok(tracks);
                 } catch (UserNotFoundException e) {
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new GenericResponse(e.getMessage()));
                 } catch (RuntimeException e) {
                         if (e.getCause() instanceof PlaylistNotFoundException ex) { // if playlist is not found - i.e.
                                                                                     // playlist ID invalid
                                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                                .build();
+                                                .body(new GenericResponse(ex.getMessage()));
                         }
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
@@ -141,6 +141,13 @@ public class TrackAnnotationsController {
                                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                                 .body(new GenericResponse(ex.getMessage()));
                         }
+
+                        if (e.getCause() instanceof PlaylistNotFoundException ex) { // if playlist is not found - i.e.
+                                // playlist ID invalid
+                                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                                .body(new GenericResponse(ex.getMessage()));
+                        }
+
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
                 } catch (Exception e) {
