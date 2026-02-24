@@ -1,8 +1,6 @@
 spring:
   application:
     name: jamjot
-  config:
-    import: file:.env[.properties]
   security:
     oauth2:
       client:
