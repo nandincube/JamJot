@@ -120,4 +120,4 @@ Jamjot was developed as a backend-focused personal project to explore OAuth inte
 
 ## Future Improvements
 - Comprehensive Unit and Integration testing
-- Simplification of ID for Playlist Member Entity. The application was originally designed to support playlists where track repetition was not accounted for. In order to accomodation for repetition, track number was added to the Playlist primary key. Although, this is a valid primary key and supports operations, it is not minimal. In future, the trackID can be removed from the the Playlist Member Entity.
+- Simplification of ID for Playlist Member Entity. The application was originally designed to support playlists where track repetition was not accounted for. In order to accomodate for repetition, track number was added to the Playlist Member primary key. Although, this is a valid primary key and supports operations, it is not minimal. In future, the trackID can be removed from the the Playlist Member Entity.
