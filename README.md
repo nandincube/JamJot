@@ -1,13 +1,22 @@
 # JamJot
 **Annotate songs in your Spotify playlist with personal notes**
 
-**Interactive API Documentation (Swagger UI):**
+**Interactive API Documentation (Swagger UI) - Spotify Account Required:**
 [Jamjot API Demo](https://jamjot.onrender.com)
 
 ## Overview
 Jamjot is a RESTful API that allows users to attach personal annotations/notes to songs within their existing Spotify playlists. The system integrates with the Spotify Web API to retrieve user's playlists and enable storing time-based notes, reflections or contextual metadata linked to specific songs.
 
 This project was built to explore third-party API integration, secure authentication flows and backend data modelling for media annotation system.
+
+## Technical Stack
+
+- Backend: Spring Boot
+- Database: PostgreSQL
+- Authentication: Spotify OAuth
+- Documentation: Swagger/OpenAPI and Java Doc
+- Hosting: Render
+- External API: Spotify Web API
 
 ## Features
 
@@ -19,29 +28,60 @@ This project was built to explore third-party API integration, secure authentica
 - CRUD opertations for management of notes
 - Per-user secure annotation/note storage
 
-
 ## Architecture and Design Overview
 - The system has a layered architecture (Model-View-Controller architecture implemented using a Service-Repository pattern) to facilitate seperation of concerns. In this architecture, the controller layer handles HTTP requests and response mapping, the service layer contains business logic and perfroms ownership validation, and the repository layer manages data persistence using Spring Data JPA.
 -  OAuth2 authentication via Spotify was performed to allow for access to protected resources, where access tokens and other relevant credentials are stored and managed by Spring Security.
 - The RESTful endpoints provided in this API are secured by Spring Security
-- Relational database schema models users, playlist, tracks and timestamps (![ER DIAGRAM](jamjot\docs\JamJot ER-Diagram.drawio.png))
+- Relational database schema models users, playlist, tracks and timestamps ![ER DIAGRAM](jamjot\docs\JamJot ER-Diagram.drawio.png)
 - All annotation operatioins are restricted to authenticated users and validated against the ownership of the playlist being annotated
 
+## Installation and Usage
 
-## Technical Stack
+### Prerequisites
+- Java 21+
+- Maven (or use `./mvnw`)
+- PostgreSQL running locally (or a hosted Postgres instance)
+- A Spotify Developer app (Client ID/Secret + Redirect URI)
 
-- Backend: Spring Boot
-- Database: PostgreSQL
-- Authentication: Spotify OAuth
-- Documentation: Swagger/OpenAPI and Java Doc
-- Hosting: Render
-- External API: Spotify Web API
+To Run Locally, 
 
-##
+### 1) Clone and enter the project
+`git clone https://github.com/nandincube/jamjot.git
+cd jamjot`
 
-## Live Demo
+### 2) Create a .env file in the project root directory, with the following information:
 
-The API is fully deployed and can be testsed interactively using Swagger UI:
+SPOTIFY_CLIENT_ID=<spotify_client_id>
+SPOTIFY_CLIENT_SECRET=<spotify_client_secret>
+REDIRECT_URI=http://127.0.0.1:8081/login/oauth2/code/spotify
+
+DATABASE_URL=jdbc:postgresql://localhost:5432/<database_name>
+DATABASE_USER=<postgres_user>
+DATABASE_PASSWORD=<database_password>
+
+
+**Note: Spotify is configured to redirect to port 8081**
+
+### 3) Create Postgres Database with prefered name
+### 4) Run the application
+Using the Maven Wrapper, run the following command:
+./mvnw spring-boot:run
+
+The server will run on:
+
+http://127.0.0.1:8081/
+
+The API documentation will be available at:
+
+http://127.0.0.1:8081/swagger-ui/index.html
+
+
+Note: Spotify is configured to allow requests from 127.0.0.1, as opposed to localhost. Therefore, this should not be replaced by localhost in URL/URIs.
+
+
+## Live Demo/Documentation
+
+The API is fully deployed and can be tested interactively using Swagger UI:
 
 **Swagger UI:**
 (https://jamjot.onrender.com)
@@ -49,4 +89,9 @@ The API is fully deployed and can be testsed interactively using Swagger UI:
 
 ## Motivation
 
-Jamjot was developed as a backend-focused personal project to explore OAuth integration, third-party API orchestration, and production-style REST API deployment with interactive documentation.
+Jamjot was developed as a backend-focused personal project to explore OAuth integration, third-party API orchestration, and REST API deployment with interactive documentation.
+
+
+## Future Improvements
+- Comprehensive unit and Integration testing
+- Simplification of ID for Playlist Member Entity. Primary Key in future will be reduced to track number and playlist id.
