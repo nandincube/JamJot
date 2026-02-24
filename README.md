@@ -1,7 +1,7 @@
 # JamJot
 **Annotate Songs in Your Spotify Playlists with Personal Notes!**
 
-Interactive API Documentation (Swagger UI) - Spotify Account Required:
+Interactive API Documentation (Swagger UI) - **Spotify Account Required**:
 <br>
 <br>
 [Jamjot API Docs](https://jamjot.onrender.com)
@@ -108,8 +108,6 @@ http://127.0.0.1:8081/swagger-ui/index.html
 ## Live Demo/Documentation
 
 The API is fully deployed and can be tested interactively using Swagger UI:
-
-**Swagger UI:**
 <br>
 <br>
 [Jamjot API Docs](https://jamjot.onrender.com)
