@@ -1,13 +1,14 @@
 # JamJot
-**Annotate songs in your Spotify playlist with personal notes**
+**Annotate Songs in Your Spotify Playlists with Personal Notes!**
 
 Interactive API Documentation (Swagger UI) - Spotify Account Required:
+<br>
 [Jamjot API Docs](https://jamjot.onrender.com)
 
 ## Overview
 Jamjot is a RESTful API that allows users to attach personal annotations/notes to songs within their existing Spotify playlists. The system integrates with the Spotify Web API to retrieve user's playlists and enable storing time-based notes, reflections or contextual metadata linked to specific songs.
 
-This project was built to explore third-party API integration, secure authentication flows and backend data modelling for media annotation system.
+This project was built to explore third-party API integration, secure authentication flows and backend data modelling for a media annotation system.
 
 ## Technical Stack
 
@@ -26,7 +27,7 @@ This project was built to explore third-party API integration, secure authentica
 - Add track-level notes to songs/tracks within playlists
 - Add Timestamp-based notes to songs
 - CRUD opertations for management of notes
-- Per-user secure annotation/note storage
+- Per-user secure annotation/note storage and manipulation
 
 ## Architecture and Design Overview
 - The system has a layered architecture (Model-View-Controller architecture implemented using a Service-Repository pattern) to facilitate seperation of concerns. In this architecture, the controller layer handles HTTP requests and response mapping, the service layer contains business logic and perfroms ownership validation, and the repository layer manages data persistence using Spring Data JPA.
@@ -113,5 +114,5 @@ Jamjot was developed as a backend-focused personal project to explore OAuth inte
 
 
 ## Future Improvements
-- Comprehensive unit and Integration testing
+- Comprehensive Unit and Integration testing
 - Simplification of ID for Playlist Member Entity. Primary Key in future will be reduced to track number and playlist id.
