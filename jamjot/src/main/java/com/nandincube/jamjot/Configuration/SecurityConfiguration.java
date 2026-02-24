@@ -11,8 +11,11 @@ public class SecurityConfiguration {
 
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-    public SecurityConfiguration(OAuth2SuccessHandler oAuth2SuccessHandler) {
+    private final OAuth2FailureHandler oAuth2FailureHandler;
+
+    public SecurityConfiguration(OAuth2SuccessHandler oAuth2SuccessHandler, OAuth2FailureHandler oAuth2FailureHandler) {
         this.oAuth2SuccessHandler = oAuth2SuccessHandler;
+        this.oAuth2FailureHandler = oAuth2FailureHandler;
     }
 
     @Bean
@@ -21,13 +24,13 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers("/", "/oauth2/**", "/login/**").permitAll();
-                    // auth.requestMatchers("/**").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .formLogin(form -> form.disable())
                 .httpBasic(basic -> basic.disable())
                 .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuth2SuccessHandler))
+                        .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler))
                 .oauth2Client(withDefaults())
                 .build();
     }

@@ -1,6 +1,8 @@
 spring:
   application:
     name: jamjot
+  config:
+    import: file:.env[.properties]
   security:
     oauth2:
       client:
@@ -31,7 +33,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8081}
   forward-headers-strategy: framework
 
 
@@ -41,4 +43,8 @@ logging:
       springframework:
         security: DEBUG
 
-      
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    page-title: Jamjot API Docs
+
