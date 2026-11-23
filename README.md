@@ -115,7 +115,7 @@ http://127.0.0.1:8081/swagger-ui/index.html
 The API is fully deployed and can be tested interactively using Swagger UI:
 <br>
 <br>
-[Jamjot API Docs](https://jamjot.onrender.com)
+[Jamjot API Docs](https://jamjot.onrender.com/swagger-ui/index.html)
 
 
 ## Motivation
