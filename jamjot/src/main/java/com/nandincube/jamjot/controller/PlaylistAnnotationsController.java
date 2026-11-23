@@ -50,10 +50,13 @@ public class PlaylistAnnotationsController {
         @ApiResponses(value = {
                         @ApiResponse(responseCode = "200", description = "OK - Playlists retrieved successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = PlaylistDTO.class)) }),
+
                         @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") })
         })
@@ -96,6 +99,8 @@ public class PlaylistAnnotationsController {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = NoteDTO.class), examples = @ExampleObject(value = """
                                                              {"note": "Sample playlist note"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") })
         })
@@ -149,6 +154,8 @@ public class PlaylistAnnotationsController {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Playlist Note Updated!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") })
         })
@@ -205,6 +212,8 @@ public class PlaylistAnnotationsController {
                                                              {"message": "Playlist Note Deleted!"}
                                                         """))
                         }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") })
         })

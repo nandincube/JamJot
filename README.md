@@ -48,7 +48,7 @@ The ternary relationship "contains" is realised as the "Playlist Member" entity 
 ## Installation and Usage
 
 ### Prerequisites
-- Java 21
+- Java 25
 - Maven (or use `./mvnw`)
 - PostgreSQL running locally (or a hosted Postgres instance)
 - A Spotify Developer app (Client ID/Secret and Redirect URI)
@@ -105,7 +105,7 @@ The API documentation will be available at:
 http://127.0.0.1:8081/swagger-ui/index.html
 
 
-**Note: If running locally, Spotify is configured to allow requests from 127.0.0.1 (as opposed to "localhost"). Therefore, 127.0.0.1 should not be replaced with  localhost in URL/URIs.**
+**Note: When running locally, Spotify does not accept localhost as a valid redirect URI hostname.  Instead, the loopback IP address (127.0.0.1) should be in URL/URIs.**
 
 
 ## Live Demo/Documentation

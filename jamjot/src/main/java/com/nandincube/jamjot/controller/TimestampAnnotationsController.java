@@ -53,12 +53,15 @@ public class TimestampAnnotationsController {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
 
                         @ApiResponse(responseCode = "200", description = "OK - Timestamp note updated successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Timestamp Note Updated!"}
                                                         """))
                         }),
+
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") }) })
 
@@ -79,7 +82,7 @@ public class TimestampAnnotationsController {
                 } catch (TimestampNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
-                }catch (Exception e) {
+                } catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
         }
@@ -98,6 +101,8 @@ public class TimestampAnnotationsController {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: End time must be less than track duration"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
                         @ApiResponse(responseCode = "200", description = "OK - Timestamp note added successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Timestamp Note Added!"}
@@ -131,14 +136,14 @@ public class TimestampAnnotationsController {
                 } catch (IllegalArgumentException e) {
                         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                                         .body(new GenericResponse(e.getMessage()));
-                } catch(RuntimeException e) {
-                        if(e.getCause() instanceof PlaylistNotFoundException ex){
+                } catch (RuntimeException e) {
+                        if (e.getCause() instanceof PlaylistNotFoundException ex) {
                                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(new GenericResponse(ex.getMessage()));
+                                                .body(new GenericResponse(ex.getMessage()));
                         } else {
                                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                         }
-                } catch(Exception e) {
+                } catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
         }
@@ -169,10 +174,12 @@ public class TimestampAnnotationsController {
                                                             }
                                                         """))
                         }),
-                         @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") }) })
 
@@ -194,10 +201,10 @@ public class TimestampAnnotationsController {
                 } catch (TrackNotFoundException e) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                         .body(new GenericResponse(e.getMessage()));
-                } catch(RuntimeException e){
-                        if(e.getCause() instanceof PlaylistNotFoundException ex){
+                } catch (RuntimeException e) {
+                        if (e.getCause() instanceof PlaylistNotFoundException ex) {
                                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .body(new GenericResponse(ex.getMessage()));
+                                                .body(new GenericResponse(ex.getMessage()));
                         } else {
                                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                         }
