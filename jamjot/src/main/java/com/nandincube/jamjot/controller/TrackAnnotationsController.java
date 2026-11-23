@@ -58,6 +58,8 @@ public class TrackAnnotationsController {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") })
         })
@@ -105,6 +107,8 @@ public class TrackAnnotationsController {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
 
                         @ApiResponse(responseCode = "200", description = "OK - Track note retrieved successfully", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = NoteDTO.class), examples = @ExampleObject(value = """
@@ -183,6 +187,8 @@ public class TrackAnnotationsController {
                                                              {"message": "Track Note Updated!"}
                                                         """))
                         }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") }) })
         @PutMapping("/playlists/{playlistID}/tracks/{trackID}/note")
@@ -244,10 +250,12 @@ public class TrackAnnotationsController {
                                                              {"message": "Track Note Deleted!"}
                                                         """))
                         }),
-                          @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
+                        @ApiResponse(responseCode = "401", description = "Unauthorized - User authentication failed or user not found", content = {
                                         @Content(mediaType = "*/*", schema = @Schema(implementation = GenericResponse.class), examples = @ExampleObject(value = """
                                                              {"message": "Error: Could not find user or issue with user authentication (re-authentication required)!"}
                                                         """)) }),
+                        @ApiResponse(responseCode = "302", description = "Unauthenticated requests are redirected to the Spotify authentication flow", content = {
+                                        @Content(mediaType = "*/*") }),
                         @ApiResponse(responseCode = "500", description = "Internal Server Error", content = {
                                         @Content(mediaType = "*/*") }) })
         @DeleteMapping("/playlists/{playlistID}/tracks/{trackID}/note")
@@ -279,7 +287,7 @@ public class TrackAnnotationsController {
                         }
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
-                }catch (Exception e) {
+                } catch (Exception e) {
                         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
         }
