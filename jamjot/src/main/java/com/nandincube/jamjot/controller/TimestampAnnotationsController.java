@@ -1,6 +1,5 @@
 package com.nandincube.jamjot.controller;
 
-import java.util.ArrayList;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
